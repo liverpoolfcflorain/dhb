@@ -1,549 +1,1173 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mall Road Accessibility Atlas — Lahore</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --deep-green:#0d5c3f;
-    --deep-green-dark:#093f2b;
-    --gold:#b98a2e;
-    --paper:#f6f7f3;
-    --ink:#16241d;
-    --line:#d8ddd5;
-    --poor:#b23b34;
-    --moderate:#c98a2e;
-    --good:#2f7a4f;
-    --radius:3px;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;height:100%;}
-  body{
-    font-family:'Work Sans',sans-serif;
-    background:var(--paper);
-    color:var(--ink);
-    overflow:hidden;
-  }
-  h1,h2,h3{font-family:'Merriweather',serif; margin:0;}
-  button{font-family:inherit; cursor:pointer;}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mall Road Accessibility Atlas — Lahore</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Work+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --deep-green: #0d5c3f;
+      --deep-green-dark: #093f2b;
+      --gold: #b98a2e;
+      --paper: #f6f7f3;
+      --ink: #16241d;
+      --line: #d8ddd5;
+      --poor: #b23b34;
+      --moderate: #c98a2e;
+      --good: #2f7a4f;
+      --radius: 3px;
+    }
 
-  /* ============ LOADER ============ */
-  #loader{
-    position:fixed; inset:0; z-index:999;
-    background:linear-gradient(180deg,var(--deep-green) 0%, var(--deep-green-dark) 100%);
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    transition:opacity .7s ease, visibility .7s ease;
-  }
-  #loader.hidden{opacity:0; visibility:hidden; pointer-events:none;}
-  #loader-logo{
-    width:min(62vw,340px);
-    height:auto;
-    animation:breathe 2.2s ease-in-out infinite;
-  }
-  @keyframes breathe{
-    0%,100%{transform:scale(1); opacity:1;}
-    50%{transform:scale(1.035); opacity:.92;}
-  }
-  #loader-text{
-    color:#eef3ee; font-family:'Merriweather',serif; letter-spacing:.02em;
-    font-size:15px; margin-top:28px; text-align:center; line-height:1.6;
-    max-width:340px;
-  }
-  .loader-actions{
-    display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
-    margin-top:24px;
-  }
-  .loader-map-btn{
-    appearance:none; border:1px solid rgba(255,255,255,.5);
-    background:rgba(255,255,255,.08); color:#fff;
-    padding:11px 16px; border-radius:3px;
-    font-size:12px; font-weight:600; letter-spacing:.01em;
-    transition:background .2s, border-color .2s, transform .2s, opacity .2s;
-  }
-  .loader-map-btn:hover:not(:disabled){
-    background:rgba(255,255,255,.16); border-color:#fff; transform:translateY(-1px);
-  }
-  .loader-map-btn.primary, .loader-map-btn.selected{
-    background:var(--gold); border-color:var(--gold); color:#fff;
-  }
-  .loader-map-btn:disabled{cursor:wait; opacity:.65;}
-  #loader.loading #loader-text::after{
-    content:'Loading selected map…'; display:block;
-    margin-top:7px; font-family:'Work Sans',sans-serif;
-    font-size:11px; color:#cfe3d7;
-  }
+    * {
+      box-sizing: border-box;
+    }
 
-  #loader-bar-track{
-    width:220px; height:3px; background:rgba(255,255,255,.22);
-    margin-top:22px; border-radius:2px; overflow:hidden;
-  }
-  #loader-bar-fill{
-    width:0%; height:100%; background:var(--gold);
-    transition:width .25s linear;
-  }
-  @media (prefers-reduced-motion: reduce){
-    #loader-logo{animation:none;}
-  }
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
 
-  /* ============ APP SHELL ============ */
-  #app{
-    height:100%; display:flex; flex-direction:column;
-    opacity:0; transition:opacity .6s ease;
-  }
-  #app.visible{opacity:1;}
+    body {
+      font-family: 'Work Sans', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      overflow: hidden;
+    }
 
-  header{
-    background:var(--deep-green);
-    color:#fff;
-    display:flex; align-items:center; justify-content:space-between;
-    padding:0 24px;
-    height:64px;
-    flex-shrink:0;
-    border-bottom:3px solid var(--gold);
-  }
-  .brand{display:flex; align-items:center; gap:12px;}
-  .brand svg{width:34px; height:34px; flex-shrink:0;}
-  .brand-text h1{font-size:16px; color:#fff; font-weight:700; letter-spacing:.01em;}
-  .brand-text span{font-size:11px; color:#cfe3d7; font-family:'Work Sans',sans-serif;}
+    h1,
+    h2,
+    h3 {
+      font-family: 'Merriweather', serif;
+      margin: 0;
+    }
 
-  nav.tabs{display:flex; gap:2px; height:100%;}
-  nav.tabs button{
-    background:transparent; border:none; color:#d9e8de;
-    padding:0 18px; height:100%;
-    font-size:13.5px; font-weight:600; letter-spacing:.01em;
-    border-bottom:3px solid transparent;
-    transition:background .2s, color .2s, border-color .2s;
-  }
-  nav.tabs button:hover{background:rgba(255,255,255,.07); color:#fff;}
-  nav.tabs button.active{color:#fff; border-bottom-color:var(--gold); background:rgba(255,255,255,.05);}
+    button {
+      font-family: inherit;
+      cursor: pointer;
+    }
 
-  main{flex:1; position:relative; overflow:hidden;}
-  .panel{
-    position:absolute; inset:0;
-    display:none;
-    background:var(--paper);
-  }
-  .panel.active{display:block;}
+    /* ============ LOADER ============ */
+    #loader {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: linear-gradient(180deg, var(--deep-green) 0%, var(--deep-green-dark) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity .7s ease, visibility .7s ease;
+    }
 
-  /* map panels */
-  #map-satellite, #map-architectural{width:100%; height:100%;}
-  #map-architectural, #map-architectural.leaflet-container{
-    background:var(--paper);
-  }
-  #map-architectural .leaflet-image-layer{
-    /* Cover subpixel gaps that show as dark bars beside the plan */
-    outline:1px solid var(--paper);
-  }
-  .map-credit{
-     position:absolute; right:12px; bottom:12px; z-index:600;
-     background:rgba(255,255,255,.92); border:1px solid var(--line);
-     padding:6px 9px; font-size:10px; color:#59645b;
-     border-radius:2px;
-  }
+    #loader.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
 
-  .map-legend{
-    position:absolute; bottom:18px; left:18px; z-index:500;
-    background:#fff; border:1px solid var(--line); border-radius:var(--radius);
-    padding:10px 14px; font-size:12px; box-shadow:0 2px 10px rgba(0,0,0,.12);
-  }
-  .map-legend h3{font-size:11px; text-transform:none; margin-bottom:6px; color:var(--ink);}
-  .legend-row{display:flex; align-items:center; gap:7px; margin:3px 0;}
-  .legend-dot{width:10px; height:10px; border-radius:50%; flex-shrink:0;}
+    #loader-logo {
+      width: min(62vw, 340px);
+      height: auto;
+      animation: breathe 2.2s ease-in-out infinite;
+    }
 
-  .map-hint{
-    position:absolute; top:16px; left:50%; transform:translateX(-50%); z-index:500;
-    background:rgba(13,92,63,.94); color:#fff; font-size:12.5px;
-    padding:8px 16px; border-radius:20px; box-shadow:0 2px 10px rgba(0,0,0,.18);
-  }
+    @keyframes breathe {
 
-  /* marker badge */
-  .score-badge{
-    display:flex; align-items:center; justify-content:center;
-    width:30px; height:30px; border-radius:50%;
-    color:#fff; font-weight:700; font-size:12px;
-    border:2px solid #fff; box-shadow:0 1px 5px rgba(0,0,0,.4);
-  }
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
 
-  /* leaflet popup */
-  .leaflet-popup-content-wrapper{border-radius:var(--radius);}
-  .popup-inner{font-family:'Work Sans',sans-serif; min-width:200px;}
-  .popup-inner h4{font-family:'Merriweather',serif; font-size:14.5px; margin:0 0 4px; color:var(--ink);}
-  .popup-score-row{display:flex; align-items:center; gap:7px; margin-bottom:6px;}
-  .popup-score-pill{
-    font-size:11px; font-weight:700; color:#fff; padding:2px 8px; border-radius:10px;
-  }
-  .popup-inner p{font-size:12.5px; line-height:1.45; margin:0 0 10px; color:#3a453e;}
-  .popup-btn{
-    display:inline-block; background:var(--deep-green); color:#fff; border:none;
-    font-size:12px; font-weight:600; padding:7px 12px; border-radius:2px;
-    width:100%;
-  }
-  .popup-btn:hover{background:var(--deep-green-dark);}
+      50% {
+        transform: scale(1.035);
+        opacity: .92;
+      }
+    }
 
-  /* ============ INFO TAB ============ */
-  #tab-info{overflow-y:auto;}
-  .info-header{
-    background:#fff; border-bottom:1px solid var(--line);
-    padding:26px 32px 20px;
-  }
-  .info-header h2{font-size:22px; color:var(--deep-green);}
-  .info-header p{font-size:13.5px; color:#54604f; max-width:640px; margin-top:6px; line-height:1.55;}
-  .info-note{
-    display:inline-block; margin-top:10px; font-size:11.5px; color:#7a6432;
-    background:#fbf3e2; border:1px solid #ecd9a8; padding:5px 10px; border-radius:2px;
-  }
+    #loader-text {
+      color: #eef3ee;
+      font-family: 'Merriweather', serif;
+      letter-spacing: .02em;
+      font-size: 15px;
+      margin-top: 28px;
+      text-align: center;
+      line-height: 1.6;
+      max-width: 340px;
+    }
 
-  .card-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-    gap:20px;
-    padding:24px 32px 48px;
-  }
-  .card{
-    background:#fff; border:1px solid var(--line); border-radius:var(--radius);
-    overflow:hidden; display:flex; flex-direction:column;
-    transition:box-shadow .2s, transform .2s;
-    scroll-margin-top:20px;
-  }
-  .card:hover{box-shadow:0 6px 18px rgba(13,92,63,.12); transform:translateY(-2px);}
-  .card.highlight{outline:2px solid var(--gold); outline-offset:-2px;}
+    .loader-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 24px;
+    }
 
-  .card-image{
-    height:120px; position:relative;
-    display:flex; align-items:center; justify-content:center;
-    color:rgba(255,255,255,.9);
-  }
-  .card-image svg{width:38px; height:38px;}
-  .card-image .card-num{
-    position:absolute; top:8px; left:8px; font-size:11px; font-weight:700;
-    background:rgba(0,0,0,.28); color:#fff; padding:2px 7px; border-radius:10px;
-  }
-  .card-body{padding:14px 16px 16px; display:flex; flex-direction:column; flex:1;}
-  .card-body h3{font-size:14.5px; line-height:1.3; margin-bottom:6px; color:var(--ink);}
-  .card-score-row{display:flex; align-items:center; gap:8px; margin-bottom:8px;}
-  .card-score-pill{font-size:11px; font-weight:700; color:#fff; padding:2px 9px; border-radius:10px;}
-  .card-score-label{font-size:11px; color:#7c877b;}
-  .card-body p{font-size:12.5px; line-height:1.5; color:#4a554a; flex:1; margin-bottom:12px;}
-  .card-btn{
-    background:transparent; border:1px solid var(--deep-green); color:var(--deep-green);
-    font-size:12px; font-weight:600; padding:8px 10px; border-radius:2px;
-    display:flex; align-items:center; justify-content:center; gap:6px;
-  }
-  .card-btn:hover{background:var(--deep-green); color:#fff;}
-  .card-btn svg{width:13px; height:13px;}
+    .loader-map-btn {
+      appearance: none;
+      border: 1px solid rgba(255, 255, 255, .5);
+      background: rgba(255, 255, 255, .08);
+      color: #fff;
+      padding: 11px 16px;
+      border-radius: 3px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .01em;
+      transition: background .2s, border-color .2s, transform .2s, opacity .2s;
+    }
 
-  @media (max-width:640px){
-    header{padding:0 12px;}
-    .brand-text span{display:none;}
-    nav.tabs button{padding:0 10px; font-size:12px;}
-    .info-header,.card-grid{padding-left:16px; padding-right:16px;}
-  }
-</style>
+    .loader-map-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, .16);
+      border-color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .loader-map-btn.primary,
+    .loader-map-btn.selected {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #fff;
+    }
+
+    .loader-map-btn:disabled {
+      cursor: wait;
+      opacity: .65;
+    }
+
+    #loader.loading #loader-text::after {
+      content: 'Loading selected map…';
+      display: block;
+      margin-top: 7px;
+      font-family: 'Work Sans', sans-serif;
+      font-size: 11px;
+      color: #cfe3d7;
+    }
+
+    #loader-bar-track {
+      width: 220px;
+      height: 3px;
+      background: rgba(255, 255, 255, .22);
+      margin-top: 22px;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    #loader-bar-fill {
+      width: 0%;
+      height: 100%;
+      background: var(--gold);
+      transition: width .25s linear;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #loader-logo {
+        animation: none;
+      }
+    }
+
+    /* ============ APP SHELL ============ */
+    #app {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity .6s ease;
+    }
+
+    #app.visible {
+      opacity: 1;
+    }
+
+    header {
+      background: var(--deep-green);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      height: 64px;
+      flex-shrink: 0;
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand svg {
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      font-size: 16px;
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: .01em;
+    }
+
+    .brand-text span {
+      font-size: 11px;
+      color: #cfe3d7;
+      font-family: 'Work Sans', sans-serif;
+    }
+
+    nav.tabs {
+      display: flex;
+      gap: 2px;
+      height: 100%;
+    }
+
+    nav.tabs button {
+      background: transparent;
+      border: none;
+      color: #d9e8de;
+      padding: 0 18px;
+      height: 100%;
+      font-size: 13.5px;
+      font-weight: 600;
+      letter-spacing: .01em;
+      border-bottom: 3px solid transparent;
+      transition: background .2s, color .2s, border-color .2s;
+    }
+
+    nav.tabs button:hover {
+      background: rgba(255, 255, 255, .07);
+      color: #fff;
+    }
+
+    nav.tabs button.active {
+      color: #fff;
+      border-bottom-color: var(--gold);
+      background: rgba(255, 255, 255, .05);
+    }
+
+    main {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel {
+      position: absolute;
+      inset: 0;
+      display: none;
+      background: var(--paper);
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    /* map panels */
+    #map-satellite,
+    #map-architectural {
+      width: 100%;
+      height: 100%;
+    }
+
+    #map-architectural,
+    #map-architectural.leaflet-container {
+      background: var(--paper);
+    }
+
+    #map-architectural .leaflet-image-layer {
+      /* Cover subpixel gaps that show as dark bars beside the plan */
+      outline: 1px solid var(--paper);
+    }
+
+    .map-credit {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      z-index: 600;
+      background: rgba(255, 255, 255, .92);
+      border: 1px solid var(--line);
+      padding: 6px 9px;
+      font-size: 10px;
+      color: #59645b;
+      border-radius: 2px;
+    }
+
+    .map-legend {
+      position: absolute;
+      bottom: 18px;
+      left: 18px;
+      z-index: 500;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      font-size: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .12);
+    }
+
+    .map-legend h3 {
+      font-size: 11px;
+      text-transform: none;
+      margin-bottom: 6px;
+      color: var(--ink);
+    }
+
+    .legend-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin: 3px 0;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .map-hint {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 500;
+      background: rgba(13, 92, 63, .94);
+      color: #fff;
+      font-size: 12.5px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .18);
+    }
+
+    /* marker badge */
+    .score-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      color: #fff;
+      font-weight: 700;
+      font-size: 12px;
+      border: 2px solid #fff;
+      box-shadow: 0 1px 5px rgba(0, 0, 0, .4);
+    }
+
+    /* leaflet popup */
+    .leaflet-popup-content-wrapper {
+      border-radius: var(--radius);
+    }
+
+    .popup-inner {
+      font-family: 'Work Sans', sans-serif;
+      min-width: 200px;
+    }
+
+    .popup-inner h4 {
+      font-family: 'Merriweather', serif;
+      font-size: 14.5px;
+      margin: 0 0 4px;
+      color: var(--ink);
+    }
+
+    .popup-score-row {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 6px;
+    }
+
+    .popup-score-pill {
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .popup-inner p {
+      font-size: 12.5px;
+      line-height: 1.45;
+      margin: 0 0 10px;
+      color: #3a453e;
+    }
+
+    .popup-btn {
+      display: inline-block;
+      background: var(--deep-green);
+      color: #fff;
+      border: none;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 12px;
+      border-radius: 2px;
+      width: 100%;
+    }
+
+    .popup-btn:hover {
+      background: var(--deep-green-dark);
+    }
+
+    /* ============ INFO TAB ============ */
+    #tab-info {
+      overflow-y: auto;
+    }
+
+    .info-header {
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      padding: 26px 32px 20px;
+    }
+
+    .info-header h2 {
+      font-size: 22px;
+      color: var(--deep-green);
+    }
+
+    .info-header p {
+      font-size: 13.5px;
+      color: #54604f;
+      max-width: 640px;
+      margin-top: 6px;
+      line-height: 1.55;
+    }
+
+    .info-note {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 11.5px;
+      color: #7a6432;
+      background: #fbf3e2;
+      border: 1px solid #ecd9a8;
+      padding: 5px 10px;
+      border-radius: 2px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+      padding: 24px 32px 48px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow .2s, transform .2s;
+      scroll-margin-top: 20px;
+    }
+
+    .card:hover {
+      box-shadow: 0 6px 18px rgba(13, 92, 63, .12);
+      transform: translateY(-2px);
+    }
+
+    .card.highlight {
+      outline: 2px solid var(--gold);
+      outline-offset: -2px;
+    }
+
+    .card-image {
+      height: 120px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, .9);
+    }
+
+    .card-image svg {
+      width: 38px;
+      height: 38px;
+    }
+
+    .card-image .card-num {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(0, 0, 0, .28);
+      color: #fff;
+      padding: 2px 7px;
+      border-radius: 10px;
+    }
+
+    .card-body {
+      padding: 14px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .card-body h3 {
+      font-size: 14.5px;
+      line-height: 1.3;
+      margin-bottom: 6px;
+      color: var(--ink);
+    }
+
+    .card-score-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .card-score-pill {
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+      padding: 2px 9px;
+      border-radius: 10px;
+    }
+
+    .card-score-label {
+      font-size: 11px;
+      color: #7c877b;
+    }
+
+    .card-body p {
+      font-size: 12.5px;
+      line-height: 1.5;
+      color: #4a554a;
+      flex: 1;
+      margin-bottom: 12px;
+    }
+
+    .card-btn {
+      background: transparent;
+      border: 1px solid var(--deep-green);
+      color: var(--deep-green);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 10px;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .card-btn:hover {
+      background: var(--deep-green);
+      color: #fff;
+    }
+
+    .card-btn svg {
+      width: 13px;
+      height: 13px;
+    }
+
+    @media (max-width:640px) {
+      header {
+        padding: 0 12px;
+      }
+
+      .brand-text span {
+        display: none;
+      }
+
+      nav.tabs button {
+        padding: 0 10px;
+        font-size: 12px;
+      }
+
+      .info-header,
+      .card-grid {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+    }
+
+    /* ============ COMPLAINT TAB ============ */
+    #tab-complaint {
+      overflow-y: auto;
+    }
+
+    .complaint-wrap {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 30px 32px 48px;
+    }
+
+    .complaint-header {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--gold);
+      padding: 24px 26px 20px;
+      margin-bottom: 18px;
+    }
+
+    .complaint-header h2 {
+      font-size: 22px;
+      color: var(--deep-green);
+    }
+
+    .complaint-header p {
+      font-size: 13.5px;
+      color: #54604f;
+      max-width: 680px;
+      margin-top: 7px;
+      line-height: 1.55;
+    }
+
+    .complaint-form {
+      background: #fff;
+      border: 1px solid var(--line);
+      padding: 24px 26px 26px;
+    }
+
+    .complaint-field {
+      margin-bottom: 18px;
+    }
+
+    .complaint-field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 7px;
+    }
+
+    .complaint-field input,
+    .complaint-field textarea {
+      width: 100%;
+      font-family: 'Work Sans', sans-serif;
+      font-size: 13px;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      padding: 10px 11px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    .complaint-field input:focus,
+    .complaint-field textarea:focus {
+      border-color: var(--deep-green);
+      box-shadow: 0 0 0 2px rgba(13, 92, 63, .08);
+    }
+
+    .complaint-field textarea {
+      min-height: 130px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+
+    .complaint-submit {
+      width: 100%;
+      background: var(--deep-green);
+      color: #fff;
+      border: 1px solid var(--deep-green);
+      border-radius: 2px;
+      padding: 11px 16px;
+      font-size: 12.5px;
+      font-weight: 700;
+      transition: background .2s, border-color .2s, transform .2s;
+    }
+
+    .complaint-submit:hover {
+      background: var(--deep-green-dark);
+      border-color: var(--deep-green-dark);
+      transform: translateY(-1px);
+    }
+
+    .complaint-submit:disabled {
+      opacity: .65;
+      cursor: wait;
+      transform: none;
+    }
+
+    .complaint-status {
+      display: none;
+      margin-top: 14px;
+      padding: 9px 11px;
+      border: 1px solid var(--line);
+      font-size: 12px;
+      line-height: 1.45;
+      border-radius: 2px;
+    }
+
+    .complaint-status.show {
+      display: block;
+    }
+
+    .complaint-status.success {
+      background: #edf6ef;
+      border-color: #b9d6bf;
+      color: #245a35;
+    }
+
+    .complaint-status.error {
+      background: #fbefee;
+      border-color: #e2b9b5;
+      color: #8b302b;
+    }
+
+    /* ============ QUERY CTA ============ */
+    .query-cta {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: 0 3px 14px rgba(0, 0, 0, .14);
+      padding: 7px 8px 7px 12px;
+      border-radius: 3px;
+    }
+
+    .query-cta span {
+      font-size: 11.5px;
+      color: #4a554a;
+    }
+
+    .query-cta button {
+      background: var(--deep-green);
+      color: #fff;
+      cursor: pointer;
+      border: 1px solid var(--deep-green);
+      border-radius: 2px;
+      padding: 7px 11px;
+      font-size: 11.5px;
+      font-weight: 700;
+    }
+
+    .query-cta button:hover {
+      background: var(--deep-green-dark);
+    }
+
+    @media (max-width:640px) {
+      .complaint-wrap {
+        padding: 20px 16px 40px;
+      }
+
+      .complaint-header,
+      .complaint-form {
+        padding: 20px;
+      }
+
+      .query-cta {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        justify-content: space-between;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- ============ LOADER ============ -->
-<div id="loader">
-  <img id="loader-logo" src="assets/logo.png" alt="Mall Road Accessibility Atlas logo">
-  <div id="loader-text">MALL ROAD ACCESSIBILITY ATLAS<br><br><span style="font-family:Work Sans,sans-serif;font-size:11px;color:#cfe3d7;">Choose a map to continue</span></div>
-  <div class="loader-actions" aria-label="Choose map">
-    <button class="loader-map-btn primary" data-start-map="satellite">Open Satellite Map</button>
-    <button class="loader-map-btn" data-start-map="architectural">Open Architectural Map</button>
-  </div>
-  <div id="loader-bar-track"><div id="loader-bar-fill"></div></div>
-</div>
-
-<!-- ============ APP ============ -->
-<div id="app">
-  <header>
-    <div class="brand">
-      <div class="brand-text">
-        <h1>Mall Road Accessibility Atlas</h1>
-        <span>An independent infrastructure survey · Lahore</span>
-      </div>
+  <!-- ============ LOADER ============ -->
+  <div id="loader">
+    <img id="loader-logo" src="assets/logo.png" alt="Mall Road Accessibility Atlas logo">
+    <div id="loader-text">MALL ROAD ACCESSIBILITY ATLAS<br><br><span
+        style="font-family:Work Sans,sans-serif;font-size:11px;color:#cfe3d7;">Choose a map to continue</span></div>
+    <div class="loader-actions" aria-label="Choose map">
+      <button class="loader-map-btn primary" data-start-map="satellite">Open Satellite Map</button>
+      <button class="loader-map-btn" data-start-map="architectural">Open Architectural Map</button>
     </div>
-    <nav class="tabs">
-      <button class="tab-btn active" data-tab="satellite">Satellite Map</button>
-      <button class="tab-btn" data-tab="architectural">Architectural Map</button>
-      <button class="tab-btn" data-tab="info">Information</button>
-    </nav>
-  </header>
+    <div id="loader-bar-track">
+      <div id="loader-bar-fill"></div>
+    </div>
+  </div>
 
-  <main>
-    <section id="tab-satellite" class="panel active">
-      <div id="map-satellite"></div>
-      <div class="map-hint">Google Earth satellite image — tap a marker for its accessibility score</div>
-    </section>
-
-    <section id="tab-architectural" class="panel">
-      <div id="map-architectural"></div>
-    
-    </section>
-
-    <section id="tab-info" class="panel">
-      <div class="info-header">
-        <h2>Surveyed buildings — Mall Road corridor</h2>
-        <p>Twenty landmarks along Lahore's main boulevard, scored on wheelchair access, tactile paving, signage and washroom availability.</p>
-        <span class="info-note">Scores and descriptions below are sample placeholder data for this prototype — replace with a verified on-site accessibility survey before publishing.</span>
+  <!-- ============ APP ============ -->
+  <div id="app">
+    <header>
+      <div class="brand">
+        <div class="brand-text">
+          <h1>Mall Road Accessibility Atlas</h1>
+          <span>An independent infrastructure survey · Lahore</span>
+        </div>
       </div>
-      <div class="card-grid" id="card-grid"></div>
-    </section>
-  </main>
-</div>
+      <nav class="tabs">
+        <button class="tab-btn active" data-tab="satellite">Satellite Map</button>
+        <button class="tab-btn" data-tab="architectural">Architectural Map</button>
+        <button class="tab-btn" data-tab="info">Information</button>
+        <button class="tab-btn" data-tab="complaint">Complaint</button>
+      </nav>
+    </header>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-<script>
-/* ================= DATA ================= */
-/* NOTE: coordinates are approximate corridor positions and scores/descriptions
-   are illustrative placeholders for this prototype — replace with a verified
-   field survey before real-world publication. */
-const buildings = [
-  {id:1, name:"Lahore Railway Station", lat:31.5837, lng:74.3299, score:38,
-    short:"Grand staircases dominate entry; no ramp at the main hall.",
-    long:"The heritage forecourt is reached by a long flight of stairs with no ramp or lift alternative. Platform edges have gaps wide enough to catch a wheelchair caster, and there is no tactile paving toward the ticket hall."},
-  {id:2, name:"General Post Office (GPO)", lat:31.5698, lng:74.3202, score:42,
-    short:"Counter heights and a raised threshold limit independent access.",
-    long:"A single stepped threshold blocks wheelchair entry at the main door. Service counters inside sit above standard reach height, and there is no dedicated queue lane or signage for visitors with disabilities."},
-  {id:3, name:"Tollinton Market", lat:31.5688, lng:74.3145, score:30,
-    short:"Uneven stone flooring and no ramped entrance on any side.",
-    long:"All four entrances are raised above street level by stone steps. The interior flooring is original cobble and highly uneven, making independent wheelchair movement effectively impossible."},
-  {id:4, name:"Lahore Museum", lat:31.5686, lng:74.3129, score:55,
-    short:"A side ramp exists but upper galleries remain stairs-only.",
-    long:"A retrofitted ramp at the east wing gives step-free access to the ground floor. However, the upper galleries are reachable only by a narrow staircase, and no lift has been installed."},
-  {id:5, name:"National College of Arts (NCA)", lat:31.5679, lng:74.3116, score:33,
-    short:"Historic gates and gravel paths make wheeled access difficult.",
-    long:"The colonial-era gatehouse has a raised sill with no ramp, and interior courtyards are surfaced in loose gravel. Studio buildings are connected mainly by stepped walkways."},
-  {id:6, name:"Zamzama Gun (Kim's Gun) Plaza", lat:31.5684, lng:74.3124, score:60,
-    short:"Open plaza is step-free but paving is cracked in places.",
-    long:"The surrounding public plaza has no stairs to navigate, but sections of paving are cracked and there are no dedicated rest points or tactile guide strips for visually impaired visitors."},
-  {id:7, name:"Punjab Public Library", lat:31.5665, lng:74.3110, score:45,
-    short:"Entrance ramp is steep and lacks handrails.",
-    long:"A narrow concrete ramp was added at the side entrance, but its gradient exceeds recommended limits and it has no handrail. Reading rooms on upper floors remain accessible only by stairs."},
-  {id:8, name:"WAPDA House", lat:31.5606, lng:74.3251, score:68,
-    short:"Modern tower with working lifts and a level entrance.",
-    long:"As a mid-century high-rise, WAPDA House has a level main entrance and functioning lifts to all floors. Accessible washrooms are limited to the ground floor, and entrance doors are heavy without automatic assist."},
-  {id:9, name:"Aiwan-e-Iqbal", lat:31.5589, lng:74.3278, score:58,
-    short:"Ramped forecourt but auditorium seating has no wheelchair bays.",
-    long:"The main forecourt has a gentle ramp alongside the ceremonial steps. Inside, the auditorium has no designated wheelchair seating and access to the mezzanine is stairs-only."},
-  {id:10, name:"Alhamra Arts Council", lat:31.5535, lng:74.3395, score:62,
-    short:"Level access to the foyer; upper halls need stairs.",
-    long:"The Mall Road foyer is level with the street and has automatic doors. Getting to the upper-floor galleries and the second auditorium still requires using a staircase, as no lift currently serves those levels."},
-  {id:11, name:"Avari Hotel", lat:31.5525, lng:74.3398, score:74,
-    short:"Ramped drop-off, lifts and an accessible guest room available.",
-    long:"As a private modern hotel, Avari offers a ramped porte-cochère, lifts to all floors and at least one accessible guest room. Signage for accessible routes inside is minimal."},
-  {id:12, name:"Charing Cross (Faisal Chowk)", lat:31.5497, lng:74.3350, score:40,
-    short:"Pedestrian crossings lack curb cuts at most corners.",
-    long:"This major intersection has crossings without dropped curbs on three of four corners, and the central plaza is reached only via steps, cutting off wheelchair users from the public seating area."},
-  {id:13, name:"Lahore High Court", lat:31.5629, lng:74.3243, score:36,
-    short:"Security screening area has no step-free route.",
-    long:"Visitors pass through a security checkpoint reached by stairs, with no ramp or lift alternative. Courtrooms are accessed via long corridors with periodic level changes but no ramps."},
-  {id:14, name:"Punjab Assembly Building", lat:31.5599, lng:74.3288, score:44,
-    short:"Formal entry stairs; a rear ramp exists but is poorly marked.",
-    long:"The ceremonial front steps have no ramp, though a service ramp exists at the rear of the building. It is unsignposted from the main road, making it hard for visitors to locate independently."},
-  {id:15, name:"Governor's House Lahore", lat:31.5648, lng:74.3305, score:50,
-    short:"Accessible provisions exist for VIP visits but not public access.",
-    long:"Temporary ramps are installed for formal state visits, but there is no permanent accessible route for general public access, and the grounds are not normally open to walk-in visitors."},
-  {id:16, name:"Falettis Hotel", lat:31.5566, lng:74.3335, score:52,
-    short:"Level lobby entrance; older guest floors lack roll-in showers.",
-    long:"The lobby is reached at street level with a short ramp. Guest rooms on older floors retain raised bathroom thresholds and none currently offer roll-in showers."},
-  {id:17, name:"Summit Minar", lat:31.5501, lng:74.3357, score:47,
-    short:"Viewing plinth reached by steps only, no assisted route.",
-    long:"The monument's base is reached by a series of stone steps with no ramp. Surrounding pathways are level, but the plinth itself remains inaccessible to wheelchair users."},
-  {id:18, name:"Bank Square", lat:31.5545, lng:74.3300, score:39,
-    short:"Narrow, obstructed footpaths along the banking block.",
-    long:"Footpaths fronting the bank buildings are frequently obstructed by parked motorcycles and vendor stalls, and door thresholds into most branches are raised without ramps."},
-  {id:19, name:"National Bank of Pakistan Building", lat:31.5620, lng:74.3230, score:41,
-    short:"Grand stone steps at entry with no ramp alternative.",
-    long:"The heritage facade's stone entry steps have no ramp or lift alternative. A side service entrance is technically level but is not open to the public and is unsignposted."},
-  {id:20, name:"Freemasons' Hall", lat:31.5675, lng:74.3135, score:29,
-    short:"Colonial-era steps and narrow doorways throughout.",
-    long:"Every entrance to this colonial-era building is raised on stone steps, and interior doorways are narrower than modern accessibility standards, limiting use of most mobility aids."}
-];
+    <main>
+      <section id="tab-satellite" class="panel active">
+        <div id="map-satellite"></div>
+        <div class="map-hint">Google Earth satellite image — tap a marker for its accessibility score</div>
+      </section>
 
-/* ================= ARCHITECTURAL MAP POSITIONS ================= */
-/* The architectural plan is a supplied schematic image, not a geo-referenced
-   map, so buildings are pinned to approximate pixel positions along the
-   corridor shown in the drawing (in the same north-to-south order as the
-   building list above) rather than to real coordinates. */
-const ARCH_IMG_WIDTH = 1206, ARCH_IMG_HEIGHT = 1304;
-const archPositions = {
-  1:[442,35],  2:[399,100], 3:[485,143], 4:[410,214], 5:[464,293],
-  6:[433,363], 7:[482,421], 8:[394,457], 9:[429,547], 10:[331,561],
-  11:[300,645],12:[238,705],13:[355,690],14:[366,768],15:[452,725],
-  16:[494,811],17:[580,769],18:[587,862],19:[676,878],20:[676,974]
-};
+      <section id="tab-architectural" class="panel">
+        <div id="map-architectural"></div>
 
-/* ================= SCORE HELPERS ================= */
-function scoreColor(s){
-  if(s < 40) return getCss('--poor');
-  if(s < 70) return getCss('--moderate');
-  return getCss('--good');
-}
-function scoreLabel(s){
-  if(s < 40) return 'Poor';
-  if(s < 70) return 'Moderate';
-  return 'Good';
-}
-function getCss(varName){
-  return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
-}
+      </section>
 
-/* ================= LOADER ================= */
-let progress = 0;
-let selectedStartMap = 'satellite';
-const barFill = document.getElementById('loader-bar-fill');
-const loader = document.getElementById('loader');
-const app = document.getElementById('app');
+      <section id="tab-info" class="panel">
+        <div class="info-header">
+          <h2>Surveyed buildings — Mall Road corridor</h2>
+          <p>Twenty landmarks along Lahore's main boulevard, scored on wheelchair access, tactile paving, signage and
+            washroom availability.</p>
+          <span class="info-note">Scores and descriptions below are sample placeholder data for this prototype — replace
+            with a verified on-site accessibility survey before publishing.</span>
+        </div>
+        <div class="card-grid" id="card-grid"></div>
+      </section>
+      <section id="tab-complaint" class="panel">
+        <div class="complaint-wrap">
+          <div class="complaint-header">
+            <h2>Submit a complaint or query</h2>
+            <p>
+              If you have identified an accessibility problem along the surveyed corridor,
+              use this form to send the details directly to the atlas administrator.
+            </p>
+          </div>
 
-document.querySelectorAll('[data-start-map]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    selectedStartMap = btn.dataset.startMap;
-    document.querySelectorAll('[data-start-map]').forEach(b => b.classList.remove('primary'));
-    btn.classList.add('primary');
-    startAtlas(selectedStartMap);
-  });
-});
+          <form class="complaint-form" id="complaint-form">
+            <div class="complaint-field">
+              <label for="complaint-location">Location</label>
+              <input id="complaint-location" name="location" type="text" placeholder="e.g. Lahore Museum entrance"
+                required>
+            </div>
 
-function startAtlas(mapName){
-  // The loader intentionally stays visible until the user chooses a map.
-  selectedStartMap = mapName;
+            <div class="complaint-field">
+              <label for="complaint-address">Address</label>
+              <input id="complaint-address" name="address" type="text"
+                placeholder="Enter the full address or nearest landmark" required>
+            </div>
 
-  const buttons = document.querySelectorAll('[data-start-map]');
-  buttons.forEach(b => {
-    b.disabled = true;
-    b.classList.toggle('selected', b.dataset.startMap === mapName);
-  });
+            <div class="complaint-field">
+              <label for="complaint-problem">What is the problem?</label>
+              <textarea id="complaint-problem" name="problem" placeholder="Describe the accessibility problem..."
+                required></textarea>
+            </div>
 
-  // Only begin the loading animation after a map has been selected.
-  progress = 0;
-  barFill.style.width = '0%';
-  let loadProgress = 0;
-  const loadInterval = setInterval(() => {
-    loadProgress += Math.random() * 20 + 12;
-    if(loadProgress >= 100){
-      loadProgress = 100;
-      clearInterval(loadInterval);
-      barFill.style.width = '100%';
+            <div class="complaint-field">
+              <label for="complaint-datetime">Date and time</label>
+              <input id="complaint-datetime" name="datetime" type="datetime-local" required>
+            </div>
 
-      setTimeout(() => {
-        loader.classList.add('hidden');
-        app.classList.add('visible');
-        showTab(mapName);
-        setTimeout(initMaps, 250);
-      }, 250);
-    } else {
-      barFill.style.width = loadProgress + '%';
+            <button class="complaint-submit" id="complaint-submit" type="submit">
+              Submit complaint
+            </button>
+
+            <div class="complaint-status" id="complaint-status" role="status" aria-live="polite"></div>
+          </form>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+  <script>
+    /* ================= DATA ================= */
+    /* NOTE: coordinates are approximate corridor positions and scores/descriptions
+       are illustrative placeholders for this prototype — replace with a verified
+       field survey before real-world publication. */
+    const buildings = [
+      {
+        id: 1, name: "Lahore Railway Station", lat: 31.5837, lng: 74.3299, score: 38,
+        short: "Grand staircases dominate entry; no ramp at the main hall.",
+        long: "The heritage forecourt is reached by a long flight of stairs with no ramp or lift alternative. Platform edges have gaps wide enough to catch a wheelchair caster, and there is no tactile paving toward the ticket hall."
+      },
+      {
+        id: 2, name: "General Post Office (GPO)", lat: 31.5698, lng: 74.3202, score: 42,
+        short: "Counter heights and a raised threshold limit independent access.",
+        long: "A single stepped threshold blocks wheelchair entry at the main door. Service counters inside sit above standard reach height, and there is no dedicated queue lane or signage for visitors with disabilities."
+      },
+      {
+        id: 3, name: "Tollinton Market", lat: 31.5688, lng: 74.3145, score: 30,
+        short: "Uneven stone flooring and no ramped entrance on any side.",
+        long: "All four entrances are raised above street level by stone steps. The interior flooring is original cobble and highly uneven, making independent wheelchair movement effectively impossible."
+      },
+      {
+        id: 4, name: "Lahore Museum", lat: 31.5686, lng: 74.3129, score: 55,
+        short: "A side ramp exists but upper galleries remain stairs-only.",
+        long: "A retrofitted ramp at the east wing gives step-free access to the ground floor. However, the upper galleries are reachable only by a narrow staircase, and no lift has been installed."
+      },
+      {
+        id: 5, name: "National College of Arts (NCA)", lat: 31.5679, lng: 74.3116, score: 33,
+        short: "Historic gates and gravel paths make wheeled access difficult.",
+        long: "The colonial-era gatehouse has a raised sill with no ramp, and interior courtyards are surfaced in loose gravel. Studio buildings are connected mainly by stepped walkways."
+      },
+      {
+        id: 6, name: "Zamzama Gun (Kim's Gun) Plaza", lat: 31.5684, lng: 74.3124, score: 60,
+        short: "Open plaza is step-free but paving is cracked in places.",
+        long: "The surrounding public plaza has no stairs to navigate, but sections of paving are cracked and there are no dedicated rest points or tactile guide strips for visually impaired visitors."
+      },
+      {
+        id: 7, name: "Punjab Public Library", lat: 31.5665, lng: 74.3110, score: 45,
+        short: "Entrance ramp is steep and lacks handrails.",
+        long: "A narrow concrete ramp was added at the side entrance, but its gradient exceeds recommended limits and it has no handrail. Reading rooms on upper floors remain accessible only by stairs."
+      },
+      {
+        id: 8, name: "WAPDA House", lat: 31.5606, lng: 74.3251, score: 68,
+        short: "Modern tower with working lifts and a level entrance.",
+        long: "As a mid-century high-rise, WAPDA House has a level main entrance and functioning lifts to all floors. Accessible washrooms are limited to the ground floor, and entrance doors are heavy without automatic assist."
+      },
+      {
+        id: 9, name: "Aiwan-e-Iqbal", lat: 31.5589, lng: 74.3278, score: 58,
+        short: "Ramped forecourt but auditorium seating has no wheelchair bays.",
+        long: "The main forecourt has a gentle ramp alongside the ceremonial steps. Inside, the auditorium has no designated wheelchair seating and access to the mezzanine is stairs-only."
+      },
+      {
+        id: 10, name: "Alhamra Arts Council", lat: 31.5535, lng: 74.3395, score: 62,
+        short: "Level access to the foyer; upper halls need stairs.",
+        long: "The Mall Road foyer is level with the street and has automatic doors. Getting to the upper-floor galleries and the second auditorium still requires using a staircase, as no lift currently serves those levels."
+      },
+      {
+        id: 11, name: "Avari Hotel", lat: 31.5525, lng: 74.3398, score: 74,
+        short: "Ramped drop-off, lifts and an accessible guest room available.",
+        long: "As a private modern hotel, Avari offers a ramped porte-cochère, lifts to all floors and at least one accessible guest room. Signage for accessible routes inside is minimal."
+      },
+      {
+        id: 12, name: "Charing Cross (Faisal Chowk)", lat: 31.5497, lng: 74.3350, score: 40,
+        short: "Pedestrian crossings lack curb cuts at most corners.",
+        long: "This major intersection has crossings without dropped curbs on three of four corners, and the central plaza is reached only via steps, cutting off wheelchair users from the public seating area."
+      },
+      {
+        id: 13, name: "Lahore High Court", lat: 31.5629, lng: 74.3243, score: 36,
+        short: "Security screening area has no step-free route.",
+        long: "Visitors pass through a security checkpoint reached by stairs, with no ramp or lift alternative. Courtrooms are accessed via long corridors with periodic level changes but no ramps."
+      },
+      {
+        id: 14, name: "Punjab Assembly Building", lat: 31.5599, lng: 74.3288, score: 44,
+        short: "Formal entry stairs; a rear ramp exists but is poorly marked.",
+        long: "The ceremonial front steps have no ramp, though a service ramp exists at the rear of the building. It is unsignposted from the main road, making it hard for visitors to locate independently."
+      },
+      {
+        id: 15, name: "Governor's House Lahore", lat: 31.5648, lng: 74.3305, score: 50,
+        short: "Accessible provisions exist for VIP visits but not public access.",
+        long: "Temporary ramps are installed for formal state visits, but there is no permanent accessible route for general public access, and the grounds are not normally open to walk-in visitors."
+      },
+      {
+        id: 16, name: "Falettis Hotel", lat: 31.5566, lng: 74.3335, score: 52,
+        short: "Level lobby entrance; older guest floors lack roll-in showers.",
+        long: "The lobby is reached at street level with a short ramp. Guest rooms on older floors retain raised bathroom thresholds and none currently offer roll-in showers."
+      },
+      {
+        id: 17, name: "Summit Minar", lat: 31.5501, lng: 74.3357, score: 47,
+        short: "Viewing plinth reached by steps only, no assisted route.",
+        long: "The monument's base is reached by a series of stone steps with no ramp. Surrounding pathways are level, but the plinth itself remains inaccessible to wheelchair users."
+      },
+      {
+        id: 18, name: "Bank Square", lat: 31.5545, lng: 74.3300, score: 39,
+        short: "Narrow, obstructed footpaths along the banking block.",
+        long: "Footpaths fronting the bank buildings are frequently obstructed by parked motorcycles and vendor stalls, and door thresholds into most branches are raised without ramps."
+      },
+      {
+        id: 19, name: "National Bank of Pakistan Building", lat: 31.5620, lng: 74.3230, score: 41,
+        short: "Grand stone steps at entry with no ramp alternative.",
+        long: "The heritage facade's stone entry steps have no ramp or lift alternative. A side service entrance is technically level but is not open to the public and is unsignposted."
+      },
+      {
+        id: 20, name: "Freemasons' Hall", lat: 31.5675, lng: 74.3135, score: 29,
+        short: "Colonial-era steps and narrow doorways throughout.",
+        long: "Every entrance to this colonial-era building is raised on stone steps, and interior doorways are narrower than modern accessibility standards, limiting use of most mobility aids."
+      }
+    ];
+
+    /* ================= ARCHITECTURAL MAP POSITIONS ================= */
+    /* The architectural plan is a supplied schematic image, not a geo-referenced
+       map, so buildings are pinned to approximate pixel positions along the
+       corridor shown in the drawing (in the same north-to-south order as the
+       building list above) rather than to real coordinates. */
+    const ARCH_IMG_WIDTH = 1206, ARCH_IMG_HEIGHT = 1304;
+    const archPositions = {
+      1: [442, 35], 2: [399, 100], 3: [485, 143], 4: [410, 214], 5: [464, 293],
+      6: [433, 363], 7: [482, 421], 8: [394, 457], 9: [429, 547], 10: [331, 561],
+      11: [300, 645], 12: [238, 705], 13: [355, 690], 14: [366, 768], 15: [452, 725],
+      16: [494, 811], 17: [580, 769], 18: [587, 862], 19: [676, 878], 20: [676, 974]
+    };
+
+    /* ================= SCORE HELPERS ================= */
+    function scoreColor(s) {
+      if (s < 40) return getCss('--poor');
+      if (s < 70) return getCss('--moderate');
+      return getCss('--good');
     }
-  }, 100);
-}
+    function scoreLabel(s) {
+      if (s < 40) return 'Poor';
+      if (s < 70) return 'Moderate';
+      return 'Good';
+    }
+    function getCss(varName) {
+      return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+    }
 
-/* ================= TABS ================= */
-const tabButtons = document.querySelectorAll('.tab-btn');
-const panels = {
-  satellite: document.getElementById('tab-satellite'),
-  architectural: document.getElementById('tab-architectural'),
-  info: document.getElementById('tab-info')
-};
-let mapsReady = false;
-let satBoundsRef = null, archBoundsRef = null;
-let satFitted = false, archFitted = false;
+    /* ================= LOADER ================= */
+    let progress = 0;
+    let selectedStartMap = 'satellite';
+    const barFill = document.getElementById('loader-bar-fill');
+    const loader = document.getElementById('loader');
+    const app = document.getElementById('app');
 
-function showTab(name){
-  tabButtons.forEach(b => b.classList.toggle('active', b.dataset.tab === name));
-  Object.entries(panels).forEach(([key, el]) => el.classList.toggle('active', key === name));
-  if(mapsReady){
-    setTimeout(()=>{
-      if(name === 'satellite'){
-        satMap.invalidateSize();
-        // The map is created while its tab may still be hidden (0-size
-        // container), so the very first time it's actually shown, re-fit
-        // the bounds now that it has a real size. After that, leave the
-        // user's own pan/zoom alone.
-        if(satBoundsRef && !satFitted){ satMap.fitBounds(satBoundsRef); satFitted = true; }
+    document.querySelectorAll('[data-start-map]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedStartMap = btn.dataset.startMap;
+        document.querySelectorAll('[data-start-map]').forEach(b => b.classList.remove('primary'));
+        btn.classList.add('primary');
+        startAtlas(selectedStartMap);
+      });
+    });
+
+    function startAtlas(mapName) {
+      // The loader intentionally stays visible until the user chooses a map.
+      selectedStartMap = mapName;
+
+      const buttons = document.querySelectorAll('[data-start-map]');
+      buttons.forEach(b => {
+        b.disabled = true;
+        b.classList.toggle('selected', b.dataset.startMap === mapName);
+      });
+
+      // Only begin the loading animation after a map has been selected.
+      progress = 0;
+      barFill.style.width = '0%';
+      let loadProgress = 0;
+      const loadInterval = setInterval(() => {
+        loadProgress += Math.random() * 20 + 12;
+        if (loadProgress >= 100) {
+          loadProgress = 100;
+          clearInterval(loadInterval);
+          barFill.style.width = '100%';
+
+          setTimeout(() => {
+            loader.classList.add('hidden');
+            app.classList.add('visible');
+            showTab(mapName);
+            setTimeout(initMaps, 250);
+          }, 250);
+        } else {
+          barFill.style.width = loadProgress + '%';
+        }
+      }, 100);
+    }
+
+    /* ================= TABS ================= */
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const panels = {
+      satellite: document.getElementById("tab-satellite"),
+      architectural: document.getElementById("tab-architectural"),
+      info: document.getElementById("tab-info"),
+      complaint: document.getElementById("tab-complaint")
+    };
+    let mapsReady = false;
+    let satBoundsRef = null, archBoundsRef = null;
+    let satFitted = false, archFitted = false;
+
+    function showTab(name) {
+      tabButtons.forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+      Object.entries(panels).forEach(([key, el]) => el.classList.toggle('active', key === name));
+      if (mapsReady) {
+        setTimeout(() => {
+          if (name === 'satellite') {
+            satMap.invalidateSize();
+            // The map is created while its tab may still be hidden (0-size
+            // container), so the very first time it's actually shown, re-fit
+            // the bounds now that it has a real size. After that, leave the
+            // user's own pan/zoom alone.
+            if (satBoundsRef && !satFitted) { satMap.fitBounds(satBoundsRef); satFitted = true; }
+          }
+          if (name === 'architectural' && archMap) {
+            archMap.invalidateSize();
+            applyArchBounds(!archFitted);
+            archFitted = true;
+          }
+        }, 50);
       }
-      if(name === 'architectural' && archMap){
-        archMap.invalidateSize();
-        applyArchBounds(!archFitted);
-        archFitted = true;
+    }
+    tabButtons.forEach(btn => btn.addEventListener('click', () => showTab(btn.dataset.tab)));
+
+    /* ================= MAPS ================= */
+    let satMap, archMap, archOverlay;
+    const satMarkers = {}, archMarkers = {};
+    const CENTER = [31.566, 74.325];
+
+    function getArchBounds() {
+      const el = document.getElementById('map-architectural');
+      const w = (el && el.clientWidth) || window.innerWidth;
+      const h = (el && el.clientHeight) || Math.max(window.innerHeight - 64, 1);
+      return [[0, 0], [Math.max(h, 1), Math.max(w, 1)]];
+    }
+
+    function archLatLngFromPixel(p, bounds) {
+      const h = bounds[1][0];
+      const w = bounds[1][1];
+      return [
+        h - (p[1] / ARCH_IMG_HEIGHT) * h,
+        (p[0] / ARCH_IMG_WIDTH) * w
+      ];
+    }
+
+    function archImageCenter(bounds) {
+      return [
+        (bounds[0][0] + bounds[1][0]) / 2,
+        (bounds[0][1] + bounds[1][1]) / 2
+      ];
+    }
+
+    function archCoverZoom(bounds) {
+      const size = archMap.getSize();
+      const bw = bounds[1][1] - bounds[0][1];
+      const bh = bounds[1][0] - bounds[0][0];
+      const scale = Math.max(size.x / bw, size.y / bh, 1);
+      return Math.log2(scale);
+    }
+
+    function applyArchBounds(fit) {
+      if (!archMap || !archOverlay) return;
+      const archBounds = getArchBounds();
+      archOverlay.setBounds(archBounds);
+      archBoundsRef = archBounds;
+      buildings.forEach(b => {
+        const p = archPositions[b.id];
+        const marker = archMarkers[b.id];
+        if (!p || !marker) return;
+        marker.setLatLng(archLatLngFromPixel(p, archBounds));
+      });
+      archMap.setMaxBounds(archBounds);
+      archMap.setMinZoom(archCoverZoom(archBounds));
+      if (fit) {
+        archMap.setView(archImageCenter(archBounds), archMap.getMinZoom());
+      } else {
+        const z = Math.min(Math.max(archMap.getZoom(), archMap.getMinZoom()), archMap.getMaxZoom());
+        archMap.setView(archMap.getCenter(), z);
       }
-    }, 50);
-  }
-}
-tabButtons.forEach(btn => btn.addEventListener('click', () => showTab(btn.dataset.tab)));
+    }
 
-/* ================= MAPS ================= */
-let satMap, archMap, archOverlay;
-const satMarkers = {}, archMarkers = {};
-const CENTER = [31.566, 74.325];
+    function makeIcon(score) {
+      return L.divIcon({
+        className: '',
+        html: `<div class="score-badge" style="background:${scoreColor(score)}">${score}</div>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15],
+        popupAnchor: [0, -14]
+      });
+    }
 
-function getArchBounds(){
-  const el = document.getElementById('map-architectural');
-  const w = (el && el.clientWidth) || window.innerWidth;
-  const h = (el && el.clientHeight) || Math.max(window.innerHeight - 64, 1);
-  return [[0, 0], [Math.max(h, 1), Math.max(w, 1)]];
-}
-
-function archLatLngFromPixel(p, bounds){
-  const h = bounds[1][0];
-  const w = bounds[1][1];
-  return [
-    h - (p[1] / ARCH_IMG_HEIGHT) * h,
-    (p[0] / ARCH_IMG_WIDTH) * w
-  ];
-}
-
-function archImageCenter(bounds){
-  return [
-    (bounds[0][0] + bounds[1][0]) / 2,
-    (bounds[0][1] + bounds[1][1]) / 2
-  ];
-}
-
-function archCoverZoom(bounds){
-  const size = archMap.getSize();
-  const bw = bounds[1][1] - bounds[0][1];
-  const bh = bounds[1][0] - bounds[0][0];
-  const scale = Math.max(size.x / bw, size.y / bh, 1);
-  return Math.log2(scale);
-}
-
-function applyArchBounds(fit){
-  if(!archMap || !archOverlay) return;
-  const archBounds = getArchBounds();
-  archOverlay.setBounds(archBounds);
-  archBoundsRef = archBounds;
-  buildings.forEach(b => {
-    const p = archPositions[b.id];
-    const marker = archMarkers[b.id];
-    if(!p || !marker) return;
-    marker.setLatLng(archLatLngFromPixel(p, archBounds));
-  });
-  archMap.setMaxBounds(archBounds);
-  archMap.setMinZoom(archCoverZoom(archBounds));
-  if(fit){
-    archMap.setView(archImageCenter(archBounds), archMap.getMinZoom());
-  } else {
-    const z = Math.min(Math.max(archMap.getZoom(), archMap.getMinZoom()), archMap.getMaxZoom());
-    archMap.setView(archMap.getCenter(), z);
-  }
-}
-
-function makeIcon(score){
-  return L.divIcon({
-    className: '',
-    html: `<div class="score-badge" style="background:${scoreColor(score)}">${score}</div>`,
-    iconSize: [30,30],
-    iconAnchor: [15,15],
-    popupAnchor: [0,-14]
-  });
-}
-
-function popupHtml(b){
-  return `<div class="popup-inner">
+    function popupHtml(b) {
+      return `<div class="popup-inner">
     <h4>${b.name}</h4>
     <div class="popup-score-row">
       <span class="popup-score-pill" style="background:${scoreColor(b.score)}">${b.score} · ${scoreLabel(b.score)}</span>
@@ -551,106 +1175,106 @@ function popupHtml(b){
     <p>${b.short}</p>
     <button class="popup-btn" onclick="goToInfo(${b.id})">View full details →</button>
   </div>`;
-}
+    }
 
-function initMaps(){
-  if(mapsReady) return;
-  mapsReady = true;
+    function initMaps() {
+      if (mapsReady) return;
+      mapsReady = true;
 
-  // SATELLITE IMAGE
-  // Replace this file with your exported Google Earth image of Main Boulevard.
-  satMap = L.map('map-satellite', {
-    zoomControl:true,
-    minZoom:13,
-    maxZoom:19
-  }).setView(CENTER, 15);
+      // SATELLITE IMAGE
+      // Replace this file with your exported Google Earth image of Main Boulevard.
+      satMap = L.map('map-satellite', {
+        zoomControl: true,
+        minZoom: 13,
+        maxZoom: 19
+      }).setView(CENTER, 15);
 
-  const satelliteBounds = [[31.545,74.305],[31.585,74.345]];
-  const satelliteImage = L.imageOverlay('assets/main-boulevard-google-earth.jpg', satelliteBounds, {
-    opacity:1,
-    interactive:false
-  }).addTo(satMap);
+      const satelliteBounds = [[31.545, 74.305], [31.585, 74.345]];
+      const satelliteImage = L.imageOverlay('assets/main-boulevard-google-earth.jpg', satelliteBounds, {
+        opacity: 1,
+        interactive: false
+      }).addTo(satMap);
 
-  satelliteImage.on('error', () => {
-    // Keep the map usable if the local Google Earth image has not been added yet.
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      attribution: 'Tiles &copy; Esri — Source: Esri, Maxar, Earthstar Geographics',
-      maxZoom: 19
-    }).addTo(satMap);
-    satelliteImage.remove();
-  });
+      satelliteImage.on('error', () => {
+        // Keep the map usable if the local Google Earth image has not been added yet.
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+          attribution: 'Tiles &copy; Esri — Source: Esri, Maxar, Earthstar Geographics',
+          maxZoom: 19
+        }).addTo(satMap);
+        satelliteImage.remove();
+      });
 
-  satMap.fitBounds(satelliteBounds);
-  satBoundsRef = satelliteBounds;
-  // Only skip the later re-fit if this tab is already the visible one
-  // right now (real container size available); otherwise showTab()
-  // will re-fit correctly the first time the user opens this tab.
-  if(panels.satellite.classList.contains('active')) satFitted = true;
+      satMap.fitBounds(satelliteBounds);
+      satBoundsRef = satelliteBounds;
+      // Only skip the later re-fit if this tab is already the visible one
+      // right now (real container size available); otherwise showTab()
+      // will re-fit correctly the first time the user opens this tab.
+      if (panels.satellite.classList.contains('active')) satFitted = true;
 
-  buildings.forEach(b => {
-    const satM = L.marker([b.lat, b.lng], {icon: makeIcon(b.score)}).addTo(satMap);
-    satM.bindPopup(popupHtml(b));
-    satMarkers[b.id] = satM;
-  });
+      buildings.forEach(b => {
+        const satM = L.marker([b.lat, b.lng], { icon: makeIcon(b.score) }).addTo(satMap);
+        satM.bindPopup(popupHtml(b));
+        satMarkers[b.id] = satM;
+      });
 
-  archMap = L.map('map-architectural', {
-    crs: L.CRS.Simple,
-    zoomControl:true,
-    zoomSnap:0.25,
-    zoomDelta:0.5,
-    minZoom:0,
-    maxZoom:2,
-    maxBoundsViscosity:1.0,
-    attributionControl:false
-  });
+      archMap = L.map('map-architectural', {
+        crs: L.CRS.Simple,
+        zoomControl: true,
+        zoomSnap: 0.25,
+        zoomDelta: 0.5,
+        minZoom: 0,
+        maxZoom: 2,
+        maxBoundsViscosity: 1.0,
+        attributionControl: false
+      });
 
-  const archBounds = getArchBounds();
-  archOverlay = L.imageOverlay('map1.png', archBounds).addTo(archMap);
-  archMap.setMaxBounds(archBounds);
-  archMap.setView(archImageCenter(archBounds), archMap.getMinZoom());
-  archBoundsRef = archBounds;
-  if(panels.architectural.classList.contains('active')) archFitted = true;
+      const archBounds = getArchBounds();
+      archOverlay = L.imageOverlay('map1.png', archBounds).addTo(archMap);
+      archMap.setMaxBounds(archBounds);
+      archMap.setView(archImageCenter(archBounds), archMap.getMinZoom());
+      archBoundsRef = archBounds;
+      if (panels.architectural.classList.contains('active')) archFitted = true;
 
-  buildings.forEach(b => {
-    const p = archPositions[b.id];
-    if(!p) return;
-    // Flip the pixel y-axis: image y grows downward, simple-CRS lat grows upward.
-    const latlng = archLatLngFromPixel(p, archBounds);
-    const archM = L.marker(latlng, {icon: makeIcon(b.score)}).addTo(archMap);
-    archM.bindPopup(popupHtml(b));
-    archMarkers[b.id] = archM;
-  });
+      buildings.forEach(b => {
+        const p = archPositions[b.id];
+        if (!p) return;
+        // Flip the pixel y-axis: image y grows downward, simple-CRS lat grows upward.
+        const latlng = archLatLngFromPixel(p, archBounds);
+        const archM = L.marker(latlng, { icon: makeIcon(b.score) }).addTo(archMap);
+        archM.bindPopup(popupHtml(b));
+        archMarkers[b.id] = archM;
+      });
 
-  setTimeout(()=>{
-    satMap.invalidateSize();
-    archMap.invalidateSize();
-    applyArchBounds(true);
-  }, 100);
+      setTimeout(() => {
+        satMap.invalidateSize();
+        archMap.invalidateSize();
+        applyArchBounds(true);
+      }, 100);
 
-  window.addEventListener('resize', () => {
-    if(!archMap) return;
-    archMap.invalidateSize();
-    applyArchBounds(panels.architectural.classList.contains('active'));
-  });
-}
+      window.addEventListener('resize', () => {
+        if (!archMap) return;
+        archMap.invalidateSize();
+        applyArchBounds(panels.architectural.classList.contains('active'));
+      });
+    }
 
-/* ================= INFO CARDS ================= */
-const gradients = [
-  'linear-gradient(135deg,#0d5c3f,#14795a)',
-  'linear-gradient(135deg,#093f2b,#0d5c3f)',
-  'linear-gradient(135deg,#8a6a24,#b98a2e)',
-  'linear-gradient(135deg,#2f4a3c,#4d7a5f)'
-];
-const buildingIconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 21V7l8-4 8 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 10h.01M15 10h.01M9 14h.01M15 14h.01"/></svg>`;
+    /* ================= INFO CARDS ================= */
+    const gradients = [
+      'linear-gradient(135deg,#0d5c3f,#14795a)',
+      'linear-gradient(135deg,#093f2b,#0d5c3f)',
+      'linear-gradient(135deg,#8a6a24,#b98a2e)',
+      'linear-gradient(135deg,#2f4a3c,#4d7a5f)'
+    ];
+    const buildingIconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 21V7l8-4 8 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 10h.01M15 10h.01M9 14h.01M15 14h.01"/></svg>`;
 
-const grid = document.getElementById('card-grid');
-buildings.forEach((b, i) => {
-  const card = document.createElement('div');
-  card.className = 'card';
-  card.id = 'card-' + b.id;
-  card.innerHTML = `
+    const grid = document.getElementById('card-grid');
+    buildings.forEach((b, i) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.id = 'card-' + b.id;
+      card.innerHTML = `
     <div class="card-image" style="background:${gradients[i % gradients.length]}">
-      <span class="card-num">${String(b.id).padStart(2,'0')}</span>
+      <span class="card-num">${String(b.id).padStart(2, '0')}</span>
       ${buildingIconSvg}
     </div>
     <div class="card-body">
@@ -665,32 +1289,109 @@ buildings.forEach((b, i) => {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </button>
     </div>`;
-  grid.appendChild(card);
-});
+      grid.appendChild(card);
+    });
 
-/* ================= CROSS-TAB NAVIGATION ================= */
-function goToInfo(id){
-  showTab('info');
-  setTimeout(()=>{
-    const card = document.getElementById('card-' + id);
-    if(card){
-      card.scrollIntoView({behavior:'smooth', block:'center'});
-      card.classList.add('highlight');
-      setTimeout(()=> card.classList.remove('highlight'), 2200);
+    /* ================= CROSS-TAB NAVIGATION ================= */
+    function goToInfo(id) {
+      showTab('info');
+      setTimeout(() => {
+        const card = document.getElementById('card-' + id);
+        if (card) {
+          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          card.classList.add('highlight');
+          setTimeout(() => card.classList.remove('highlight'), 2200);
+        }
+      }, 150);
     }
-  }, 150);
-}
 
-function goToMap(id){
-  showTab('architectural');
-  setTimeout(()=>{
-    const m = archMarkers[id];
-    if(m && archMap){
-      archMap.setView(m.getLatLng(), archMap.getMaxZoom());
-      m.openPopup();
+    function goToMap(id) {
+      showTab('architectural');
+      setTimeout(() => {
+        const m = archMarkers[id];
+        if (m && archMap) {
+          archMap.setView(m.getLatLng(), archMap.getMaxZoom());
+          m.openPopup();
+        }
+      }, 350);
     }
-  }, 350);
-}
-</script>
+    /* ================= COMPLAINT EMAIL ================= */
+    /*
+     * EmailJS is frontend-only. Replace these three placeholders with the
+     * values from your EmailJS account:
+     *   1. PUBLIC_KEY
+     *   2. SERVICE_ID
+     *   3. TEMPLATE_ID
+     *
+     * Your EmailJS template should use:
+     *   {{location}}
+     *   {{address}}
+     *   {{problem}}
+     *   {{datetime}}
+     */
+    const EMAILJS_PUBLIC_KEY = 'b2kALa_1rjjZ1psdv';
+    const EMAILJS_SERVICE_ID = 'service_22599kp';
+    const EMAILJS_TEMPLATE_ID = 'template_0c2dqj8';
+
+    if (window.emailjs) {
+      emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+    }
+
+    const complaintForm = document.getElementById('complaint-form');
+    const complaintSubmit = document.getElementById('complaint-submit');
+    const complaintStatus = document.getElementById('complaint-status');
+
+    complaintForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      complaintStatus.className = 'complaint-status';
+      complaintStatus.textContent = '';
+
+      if (
+        EMAILJS_PUBLIC_KEY === 'YOUR_EMAILJS_PUBLIC_KEY' ||
+        EMAILJS_SERVICE_ID === 'YOUR_EMAILJS_SERVICE_ID' ||
+        EMAILJS_TEMPLATE_ID === 'YOUR_EMAILJS_TEMPLATE_ID'
+      ) {
+        complaintStatus.textContent =
+          'Email service is not configured yet. Add your EmailJS Public Key, Service ID and Template ID in the code.';
+        complaintStatus.classList.add('show', 'error');
+        return;
+      }
+
+      complaintSubmit.disabled = true;
+      complaintSubmit.textContent = 'Sending…';
+
+      const formData = new FormData(complaintForm);
+      const templateParams = {
+        location: formData.get('location'),
+        address: formData.get('address'),
+        problem: formData.get('problem'),
+        datetime: formData.get('datetime')
+      };
+
+      try {
+        await emailjs.send(
+          EMAILJS_SERVICE_ID,
+          EMAILJS_TEMPLATE_ID,
+          templateParams
+        );
+
+        complaintStatus.textContent =
+          'Your complaint has been submitted successfully. Thank you for helping document accessibility problems.';
+        complaintStatus.classList.add('show', 'success');
+        complaintForm.reset();
+      } catch (error) {
+        console.error('EmailJS error:', error);
+        complaintStatus.textContent =
+          'The complaint could not be sent. Please try again in a moment.';
+        complaintStatus.classList.add('show', 'error');
+      } finally {
+        complaintSubmit.disabled = false;
+        complaintSubmit.textContent = 'Submit complaint';
+      }
+    });
+
+  </script>
 </body>
+
 </html>
