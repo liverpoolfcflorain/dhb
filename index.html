@@ -396,6 +396,22 @@
       padding: 8px 16px;
       border-radius: 20px;
       box-shadow: 0 2px 10px rgba(0, 0, 0, .18);
+      transition: opacity .4s ease;
+    }
+
+    /* Overflow/scroll hint for the architectural map — mobile only, since
+       that's the only view where the plan is deliberately wider than the
+       screen and needs to be panned to see the rest. */
+    .arch-mobile-hint {
+      display: none;
+    }
+
+    @media (max-width:640px) {
+      .arch-mobile-hint {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
     }
 
     /* marker badge */
@@ -924,7 +940,7 @@
 
       <section id="tab-architectural" class="panel">
         <div id="map-architectural"></div>
-
+        <div class="map-hint arch-mobile-hint" id="arch-mobile-hint">⟷ Swipe to explore the full plan</div>
       </section>
 
       <section id="tab-info" class="panel">
@@ -1244,10 +1260,28 @@
     const satMarkers = {}, archMarkers = {};
     const CENTER = [31.566, 74.325];
 
+    // Matches the app's own mobile breakpoint (see the @media (max-width:640px)
+    // rules above), so "mobile" here means the same thing it means in the CSS.
+    function isMobileArch() {
+      return window.matchMedia('(max-width: 640px)').matches;
+    }
+
     function getArchBounds() {
       const el = document.getElementById('map-architectural');
       const w = (el && el.clientWidth) || window.innerWidth;
       const h = (el && el.clientHeight) || Math.max(window.innerHeight - 64, 1);
+
+      if (isMobileArch()) {
+        // On mobile, don't stretch the plan to exactly fill the screen.
+        // Size it to the image's true aspect ratio at the container's
+        // height instead, so the rendered map is wider than the screen
+        // and the user has to scroll/pan horizontally to see the rest of
+        // the corridor, rather than seeing the whole thing at once.
+        const bh = Math.max(h, 1);
+        const bw = bh * (ARCH_IMG_WIDTH / ARCH_IMG_HEIGHT);
+        return [[0, 0], [bh, bw]];
+      }
+
       return [[0, 0], [Math.max(h, 1), Math.max(w, 1)]];
     }
 
@@ -1267,11 +1301,27 @@
       ];
     }
 
+    // How much further than a plain "fit the height" to zoom in on mobile.
+    // A pure aspect-ratio fit can, on some phone/viewport shapes, end up
+    // barely wider than the screen (or not wider at all), which leaves
+    // nothing to pan through. This guarantees a real, visible section-view
+    // with room to scroll on every device. 0.6 ≈ 1.5x zoomed in past fit.
+    const MOBILE_ARCH_ZOOM_BOOST = 0.6;
+
     function archCoverZoom(bounds) {
       const size = archMap.getSize();
       const bw = bounds[1][1] - bounds[0][1];
       const bh = bounds[1][0] - bounds[0][0];
-      const scale = Math.max(size.x / bw, size.y / bh, 1);
+      let scale;
+      if (isMobileArch()) {
+        // Fit the height, then deliberately zoom in further so the map is
+        // always larger than the viewport in both directions — that's what
+        // guarantees there's something to pan through, whatever the phone's
+        // screen proportions happen to be.
+        scale = Math.max(size.y / bh, 1) * Math.pow(2, MOBILE_ARCH_ZOOM_BOOST);
+      } else {
+        scale = Math.max(size.x / bw, size.y / bh, 1);
+      }
       return Math.log2(scale);
     }
 
@@ -1365,7 +1415,11 @@
         minZoom: 0,
         maxZoom: 2,
         maxBoundsViscosity: 1.0,
-        attributionControl: false
+        attributionControl: false,
+        dragging: true,
+        touchZoom: true,
+        tap: true,
+        inertia: true
       });
 
       const archBounds = getArchBounds();
@@ -1384,6 +1438,11 @@
         archM.bindPopup(popupHtml(b));
         archMarkers[b.id] = archM;
       });
+
+      const archMobileHint = document.getElementById('arch-mobile-hint');
+      if (archMobileHint) {
+        archMap.once('dragstart', () => { archMobileHint.style.opacity = '0'; });
+      }
 
       setTimeout(() => {
         satMap.invalidateSize();
