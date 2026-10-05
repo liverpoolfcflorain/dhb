@@ -561,6 +561,15 @@
       height: 38px;
     }
 
+    .card-image img.entrance-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
     .card-image .card-num {
       position: absolute;
       top: 8px;
@@ -891,6 +900,308 @@
         justify-content: space-between;
       }
     }
+
+    /* ============ EVALUATION LOADING PAGE + SHEETS ============ */
+    #eval-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 1001;
+      background: linear-gradient(180deg, var(--deep-green) 0%, var(--deep-green-dark) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .35s ease, visibility .35s ease;
+      color: #eef3ee;
+    }
+
+    #eval-loader.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    #eval-loader-logo {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      animation: breathe 2.2s ease-in-out infinite;
+    }
+
+    #eval-loader h2 {
+      color: #fff;
+      font-size: 20px;
+      margin-top: 22px;
+    }
+
+    #eval-loader-step {
+      font-size: 12.5px;
+      color: #cfe3d7;
+      margin-top: 10px;
+      min-height: 18px;
+    }
+
+    #eval-bar-track {
+      width: min(300px, 70vw);
+      height: 4px;
+      background: rgba(255, 255, 255, .18);
+      border-radius: 2px;
+      margin-top: 22px;
+      overflow: hidden;
+    }
+
+    #eval-bar-fill {
+      height: 100%;
+      width: 0;
+      background: var(--gold);
+      transition: width .15s linear;
+    }
+
+    #sheet-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: var(--paper);
+      overflow-y: auto;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .35s ease, visibility .35s ease;
+    }
+
+    #sheet-overlay.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .sheet-top {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      padding: 16px 24px 0;
+    }
+
+    .sheet-top-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .sheet-top h2 {
+      font-size: 20px;
+      color: var(--deep-green);
+    }
+
+    .sheet-sub {
+      font-size: 12px;
+      color: #7c877b;
+      margin-top: 4px;
+    }
+
+    .sheet-close {
+      background: transparent;
+      border: 1px solid var(--deep-green);
+      color: var(--deep-green);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: 2px;
+      white-space: nowrap;
+    }
+
+    .sheet-close:hover {
+      background: var(--deep-green);
+      color: #fff;
+    }
+
+    .sheet-tabs {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      margin-top: 14px;
+      padding-bottom: 0;
+      scrollbar-width: thin;
+    }
+
+    .sheet-tab {
+      flex: 0 0 auto;
+      background: transparent;
+      border: 0;
+      border-bottom: 3px solid transparent;
+      padding: 9px 12px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #54604f;
+    }
+
+    .sheet-tab:hover {
+      color: var(--deep-green);
+    }
+
+    .sheet-tab.active {
+      color: var(--deep-green);
+      border-bottom-color: var(--gold);
+    }
+
+    .sheet-body {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 24px 24px 56px;
+    }
+
+    .sheet-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .sheet-heading h3 {
+      font-size: 17px;
+      color: var(--ink);
+    }
+
+    .sheet-pill {
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      padding: 3px 11px;
+      border-radius: 12px;
+    }
+
+    .sheet-meta {
+      font-size: 12.5px;
+      color: #54604f;
+      margin-bottom: 14px;
+    }
+
+    .sheet-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border: 1px solid var(--line);
+      font-size: 13.5px;
+    }
+
+    .sheet-table th,
+    .sheet-table td {
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .sheet-table th {
+      background: #eef2ec;
+      font-size: 11.5px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: #54604f;
+    }
+
+    .sheet-table td.num,
+    .sheet-table th.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .sheet-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .res {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+    }
+
+    .res.pass {
+      color: var(--good);
+    }
+
+    .res.fail {
+      color: var(--poor);
+    }
+
+    .res small {
+      font-weight: 500;
+      color: #7c877b;
+    }
+
+    .domain-row {
+      cursor: pointer;
+      transition: background .15s;
+    }
+
+    .domain-row:hover {
+      background: #f3f6f1;
+    }
+
+    .domain-link {
+      background: none;
+      border: 0;
+      padding: 0;
+      font: inherit;
+      font-weight: 600;
+      color: var(--deep-green);
+      text-align: left;
+      text-decoration: underline;
+      text-decoration-color: transparent;
+      text-underline-offset: 3px;
+    }
+
+    .domain-row:hover .domain-link,
+    .domain-link:focus-visible {
+      text-decoration-color: currentColor;
+    }
+
+    .sheet-bar {
+      height: 6px;
+      background: #e6eae3;
+      border-radius: 3px;
+      overflow: hidden;
+      min-width: 80px;
+    }
+
+    .sheet-bar span {
+      display: block;
+      height: 100%;
+    }
+
+    .sheet-empty {
+      background: #fff;
+      border: 1px solid var(--line);
+      padding: 32px 24px;
+      text-align: center;
+      color: #54604f;
+      line-height: 1.6;
+    }
+
+    .sheet-btn {
+      margin-top: 8px;
+    }
+
+    @media (max-width:640px) {
+      .sheet-top {
+        padding: 14px 16px 0;
+      }
+
+      .sheet-body {
+        padding: 18px 14px 48px;
+      }
+
+      .sheet-table th,
+      .sheet-table td {
+        padding: 9px 10px;
+      }
+    }
   </style>
 </head>
 
@@ -997,6 +1308,30 @@
       </section>
 
     </main>
+  </div>
+
+
+  <!-- ============ EVALUATION LOADING PAGE + SHEETS ============ -->
+  <div id="eval-loader" aria-live="polite">
+    <img id="eval-loader-logo" src="logo.png" alt="">
+    <h2 id="eval-loader-title">Loading evaluation</h2>
+    <div id="eval-loader-step"></div>
+    <div id="eval-bar-track">
+      <div id="eval-bar-fill"></div>
+    </div>
+  </div>
+  <div id="sheet-overlay" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+    <div class="sheet-top">
+      <div class="sheet-top-row">
+        <div>
+          <h2 id="sheet-title"></h2>
+          <div class="sheet-sub" id="sheet-sub"></div>
+        </div>
+        <button class="sheet-close" id="sheet-close" type="button">← Back to buildings</button>
+      </div>
+      <div class="sheet-tabs" id="sheet-tabs" role="tablist"></div>
+    </div>
+    <div class="sheet-body" id="sheet-body"></div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
@@ -1457,6 +1792,173 @@
       });
     }
 
+
+    /* ================= ACCESSIBILITY EVALUATION SHEETS ================= */
+    /* Evaluation data from accessibility_evaluations_updated.json.
+       Card N is matched to the Nth building in this file (by order). */
+    const evaluationData = { "domains": [{ "domain": "Domain 1: Approach and Arrival", "weight": "15%", "criteria": ["Accessible parking bays", "Bays usable in practice", "Dropped kerb or curb cut", "Accessible route to entrance", "Route free of obstruction"] }, { "domain": "Domain 2: Entrance", "weight": "25%", "criteria": ["Step-free entry available", "Ramp gradient", "Ramp clear width", "Ramp landings", "Ramp edge protection", "Ramp handrails", "Ramp surface", "Main door clear width", "Door operable"] }, { "domain": "Domain 3: Horizontal Circulation+", "weight": "10%", "criteria": ["Corridor clear width", "Turning space", "Internal doors", "Internal level changes", "Floor surfaces"] }, { "domain": "Domain 4: Vertical Circulation", "weight": "15%", "criteria": ["Lift provided", "Lift location", "Lift car size", "Lift door opening", "Lift controls", "Lift indication", "Lift operational", "Stair handrails", "Stair nosings"] }, { "domain": "Domain 5: Sanitary Facilities", "weight": "15%", "criteria": ["Accessible toilet provided", "Cubicle permits use", "Door swing", "Door clear width", "Grab bars", "WC seat height", "Basin, tap and mirror", "Emergency call facility", "Available in practice"] }, { "domain": "Domain 6: Signage, Wayfinding and Sensory Access", "weight": "10%", "criteria": ["International Symbol of Access", "Directional signage", "Signage legibility", "Tactile and Braille information", "Tactile ground surface indicators", "Assistive listening", "Lighting"] }, { "domain": "Domain 7: Emergency Egress", "weight": "5%", "criteria": ["Accessible means of egress", "Refuge area", "Visual fire alarm", "Escape routes clear"] }, { "domain": "Domain 8: Service and Staff Provision", "weight": "5%", "criteria": ["Lowered counter section", "Seating in waiting areas", "Staff awareness", "Documented provision"] }], "buildings": [{ "name": "Kfc", "evaluations": { "Accessible parking bays": "✓", "Bays usable in practice": "✓", "Dropped kerb or curb cut": "✓", "Accessible route to entrance": "✓", "Route free of obstruction": "✓", "Step-free entry available": "✗", "Ramp gradient": "✗", "Ramp clear width": "✗", "Ramp landings": "✗", "Ramp edge protection": "✗", "Ramp handrails": "✗", "Ramp surface": "✗", "Main door clear width": "✗", "Door operable": "✗", "Corridor clear width": "✗", "Turning space": "✗", "Internal doors": "✗", "Internal level changes": "✗", "Floor surfaces": "✗", "Lift provided": "✗", "Lift location": "✗", "Lift car size": "✗", "Lift door opening": "✗", "Lift controls": "✗", "Lift indication": "✗", "Lift operational": "✗", "Stair handrails": "✗", "Stair nosings": "✗", "Accessible toilet provided": "✗", "Cubicle permits use": "✗", "Door swing": "✗", "Door clear width": "✗", "Grab bars": "✗", "WC seat height": "✗", "Basin, tap and mirror": "✗", "Emergency call facility": "✗", "Available in practice": "✗", "International Symbol of Access": "✗", "Directional signage": "✗", "Signage legibility": "✗", "Tactile and Braille information": "✗", "Tactile ground surface indicators": "✗", "Assistive listening": "✗", "Lighting": "✗", "Accessible means of egress": "✗", "Refuge area": "✗", "Visual fire alarm": "✗", "Escape routes clear": "✗", "Lowered counter section": "✗", "Seating in waiting areas": "✗", "Staff awareness": "✗", "Documented provision": "✗" } }, { "name": "Cue Cinemas", "evaluations": { "Accessible parking bays": "✓", "Bays usable in practice": "✓", "Dropped kerb or curb cut": "✓", "Accessible route to entrance": "✓", "Route free of obstruction": "✓", "Step-free entry available": "✓", "Ramp gradient": "low", "Ramp clear width": "✓", "Ramp landings": "✓", "Ramp edge protection": "✓", "Ramp handrails": "✓", "Ramp surface": "✓", "Main door clear width": "✓", "Door operable": "✓", "Corridor clear width": "✓", "Turning space": "✓", "Internal doors": "✓", "Internal level changes": "✓", "Floor surfaces": "✓", "Lift provided": "✓", "Lift location": "✓", "Lift car size": "✓", "Lift door opening": "✓", "Lift controls": "✓", "Lift indication": "✓", "Lift operational": "✓", "Stair handrails": "✓", "Stair nosings": "✓", "Accessible toilet provided": "✓", "Cubicle permits use": "✗", "Door swing": "✗", "Door clear width": "✗", "Grab bars": "✗", "WC seat height": "✗", "Basin, tap and mirror": "✗", "Emergency call facility": "✗", "Available in practice": "✗", "International Symbol of Access": "✗", "Directional signage": "✗", "Signage legibility": "✗", "Tactile and Braille information": "✗", "Tactile ground surface indicators": "✗", "Assistive listening": "✗", "Lighting": "✗", "Accessible means of egress": "✗", "Refuge area": "✗", "Visual fire alarm": "✗", "Escape routes clear": "✗", "Lowered counter section": "✗", "Seating in waiting areas": "✗", "Staff awareness": "✗", "Documented provision": "✗" } }, { "name": "Zoro burger", "evaluations": { "Accessible parking bays": "✓", "Bays usable in practice": "✓", "Dropped kerb or curb cut": "✓", "Accessible route to entrance": "✓", "Route free of obstruction": "✓", "Step-free entry available": "✓", "Ramp gradient": "✓", "Ramp clear width": "✓", "Ramp landings": "✓", "Ramp edge protection": "✓", "Ramp handrails": "✓", "Ramp surface": "✓", "Main door clear width": "✓", "Door operable": "✓", "Corridor clear width": "✓", "Turning space": "✓", "Internal doors": "✓", "Internal level changes": "✗", "Floor surfaces": "✗", "Lift provided": "✗", "Lift location": "✗", "Lift car size": "✗", "Lift door opening": "✗", "Lift controls": "✗", "Lift indication": "✗", "Lift operational": "✗", "Stair handrails": "✗", "Stair nosings": "✗", "Accessible toilet provided": "✗", "Cubicle permits use": "✗", "Door swing": "✗", "Door clear width": "✗", "Grab bars": "✗", "WC seat height": "✗", "Basin, tap and mirror": "✗", "Emergency call facility": "✗", "Available in practice": "✗", "International Symbol of Access": "✗", "Directional signage": "✗", "Signage legibility": "✗", "Tactile and Braille information": "✗", "Tactile ground surface indicators": "✗", "Assistive listening": "✗", "Lighting": "✗", "Accessible means of egress": "✗", "Refuge area": "✗", "Visual fire alarm": "✗", "Escape routes clear": "✗", "Lowered counter section": "✗", "Seating in waiting areas": "✗", "Staff awareness": "✗", "Documented provision": "✗" } }, { "name": "Cosa Nostra", "evaluations": { "Accessible parking bays": "✓", "Bays usable in practice": "✓", "Dropped kerb or curb cut": "✓", "Accessible route to entrance": "✓", "Route free of obstruction": "steep", "Step-free entry available": "✓", "Ramp gradient": "✓", "Ramp clear width": "✓", "Ramp landings": "✓", "Ramp edge protection": "✓", "Ramp handrails": "✓", "Ramp surface": "✓", "Main door clear width": "✓", "Door operable": "✓", "Corridor clear width": "✓", "Turning space": "✓", "Internal doors": "✓", "Internal level changes": "✓", "Floor surfaces": "✓", "Lift provided": "✓", "Lift location": "✓", "Lift car size": "✓", "Lift door opening": "✓", "Lift controls": "✗", "Lift indication": "✗", "Lift operational": "✗", "Stair handrails": "✗", "Stair nosings": "✗", "Accessible toilet provided": "✗", "Cubicle permits use": "✗", "Door swing": "✗", "Door clear width": "✗", "Grab bars": "✗", "WC seat height": "✗", "Basin, tap and mirror": "✗", "Emergency call facility": "✗", "Available in practice": "✗", "International Symbol of Access": "✗", "Directional signage": "✗", "Signage legibility": "✗", "Tactile and Braille information": "✗", "Tactile ground surface indicators": "✗", "Assistive listening": "✗", "Lighting": "✗", "Accessible means of egress": "✗", "Refuge area": "✗", "Visual fire alarm": "✗", "Escape routes clear": "✗", "Lowered counter section": "✗", "Seating in waiting areas": "✗", "Staff awareness": "✗", "Documented provision": "✗" } }, { "name": "The Coffee bean and tea leaf", "evaluations": { "Accessible parking bays": "✓", "Bays usable in practice": "✓", "Dropped kerb or curb cut": "✓", "Accessible route to entrance": "✓", "Route free of obstruction": "✓", "Step-free entry available": "no ramp", "Ramp gradient": "✓", "Ramp clear width": "✓", "Ramp landings": "✓", "Ramp edge protection": "✓", "Ramp handrails": "✓", "Ramp surface": "✓", "Main door clear width": "✓", "Door operable": "✓", "Corridor clear width": "✓", "Turning space": "✓", "Internal doors": "✓", "Internal level changes": "✓", "Floor surfaces": "✓", "Lift provided": "✓", "Lift location": "✓", "Lift car size": "✓", "Lift door opening": "✗", "Lift controls": "✗", "Lift indication": "✗", "Lift operational": "✗", "Stair handrails": "✗", "Stair nosings": "✗", "Accessible toilet provided": "✗", "Cubicle permits use": "✗", "Door swing": "✗", "Door clear width": "✗", "Grab bars": "✗", "WC seat height": "✗", "Basin, tap and mirror": "✗", "Emergency call facility": "✗", "Available in practice": "✗", "International Symbol of Access": "✗", "Directional signage": "✗", "Signage legibility": "✗", "Tactile and Braille information": "✗", "Tactile ground surface indicators": "✗", "Assistive listening": "✗", "Lighting": "✗", "Accessible means of egress": "✗", "Refuge area": "✗", "Visual fire alarm": "✗", "Escape routes clear": "✗", "Lowered counter section": "✗", "Seating in waiting areas": "✗", "Staff awareness": "✗", "Documented provision": "✗" } }, { "name": "Rina's", "evaluations": { "Accessible parking bays": "✓", "Bays usable in practice": "✓", "Dropped kerb or curb cut": "✓", "Accessible route to entrance": "✓", "Route free of obstruction": "✓", "Step-free entry available": "✓", "Ramp gradient": "✓", "Ramp clear width": "✓", "Ramp landings": "✓", "Ramp edge protection": "✓", "Ramp handrails": "✓", "Ramp surface": "✓", "Main door clear width": "✓", "Door operable": "✓", "Corridor clear width": "✓", "Turning space": "✓", "Internal doors": "✓", "Internal level changes": "✓", "Floor surfaces": "✗", "Lift provided": "✗", "Lift location": "✗", "Lift car size": "✗", "Lift door opening": "✗", "Lift controls": "✗", "Lift indication": "✗", "Lift operational": "✗", "Stair handrails": "✗", "Stair nosings": "✗", "Accessible toilet provided": "✗", "Cubicle permits use": "✗", "Door swing": "✗", "Door clear width": "✗", "Grab bars": "✗", "WC seat height": "✗", "Basin, tap and mirror": "✗", "Emergency call facility": "✗", "Available in practice": "✗", "International Symbol of Access": "✗", "Directional signage": "✗", "Signage legibility": "✗", "Tactile and Braille information": "✗", "Tactile ground surface indicators": "✗", "Assistive listening": "✗", "Lighting": "✗", "Accessible means of egress": "✗", "Refuge area": "✗", "Visual fire alarm": "✗", "Escape routes clear": "✗", "Lowered counter section": "✗", "Seating in waiting areas": "✗", "Staff awareness": "✗", "Documented provision": "✗" } }, { "name": "McDonald's", "evaluations": { "Accessible parking bays": "✓", "Bays usable in practice": "✓", "Dropped kerb or curb cut": "✓", "Accessible route to entrance": "✓", "Route free of obstruction": "✓", "Step-free entry available": "✓", "Ramp gradient": "no ramp", "Ramp clear width": "✓", "Ramp landings": "✓", "Ramp edge protection": "✓", "Ramp handrails": "✓", "Ramp surface": "✓", "Main door clear width": "✓", "Door operable": "✓", "Corridor clear width": "✓", "Turning space": "✓", "Internal doors": "✓", "Internal level changes": "✓", "Floor surfaces": "✓", "Lift provided": "✓", "Lift location": "✓", "Lift car size": "✓", "Lift door opening": "✓", "Lift controls": "✓", "Lift indication": "✓", "Lift operational": "✓", "Stair handrails": "✗", "Stair nosings": "✗", "Accessible toilet provided": "✗", "Cubicle permits use": "✗", "Door swing": "✗", "Door clear width": "✗", "Grab bars": "✗", "WC seat height": "✗", "Basin, tap and mirror": "✗", "Emergency call facility": "✗", "Available in practice": "✗", "International Symbol of Access": "✗", "Directional signage": "✗", "Signage legibility": "✗", "Tactile and Braille information": "✗", "Tactile ground surface indicators": "✗", "Assistive listening": "✗", "Lighting": "✗", "Accessible means of egress": "✗", "Refuge area": "✗", "Visual fire alarm": "✗", "Escape routes clear": "✗", "Lowered counter section": "✗", "Seating in waiting areas": "✗", "Staff awareness": "✗", "Documented provision": "✗" } }, { "name": "Mega Tower", "evaluations": { "Accessible parking bays": "✓", "Bays usable in practice": "✓", "Dropped kerb or curb cut": "✓", "Accessible route to entrance": "✓", "Route free of obstruction": "✓", "Step-free entry available": "steep", "Ramp gradient": "✓", "Ramp clear width": "✓", "Ramp landings": "✓", "Ramp edge protection": "✓", "Ramp handrails": "✓", "Ramp surface": "✓", "Main door clear width": "✓", "Door operable": "✓", "Corridor clear width": "✓", "Turning space": "✓", "Internal doors": "✓", "Internal level changes": "✓", "Floor surfaces": "✓", "Lift provided": "✓", "Lift location": "✓", "Lift car size": "✓", "Lift door opening": "✓", "Lift controls": "✓", "Lift indication": "✓", "Lift operational": "✓", "Stair handrails": "✓", "Stair nosings": "✓", "Accessible toilet provided": "✓", "Cubicle permits use": "✓", "Door swing": "✗", "Door clear width": "✗", "Grab bars": "✗", "WC seat height": "✗", "Basin, tap and mirror": "✗", "Emergency call facility": "✗", "Available in practice": "✗", "International Symbol of Access": "✗", "Directional signage": "✗", "Signage legibility": "✗", "Tactile and Braille information": "✗", "Tactile ground surface indicators": "✗", "Assistive listening": "✗", "Lighting": "✗", "Accessible means of egress": "✗", "Refuge area": "✗", "Visual fire alarm": "✗", "Escape routes clear": "✗", "Lowered counter section": "✗", "Seating in waiting areas": "✗", "Staff awareness": "✗", "Documented provision": "✗" } }, { "name": "Lahore center", "evaluations": { "Accessible parking bays": "✓", "Bays usable in practice": "✓", "Dropped kerb or curb cut": "✓", "Accessible route to entrance": "✓", "Route free of obstruction": "✓", "Step-free entry available": "low", "Ramp gradient": "✓", "Ramp clear width": "✓", "Ramp landings": "✓", "Ramp edge protection": "✓", "Ramp handrails": "✓", "Ramp surface": "✓", "Main door clear width": "✓", "Door operable": "✓", "Corridor clear width": "✓", "Turning space": "✓", "Internal doors": "✓", "Internal level changes": "✓", "Floor surfaces": "✓", "Lift provided": "✓", "Lift location": "✓", "Lift car size": "✓", "Lift door opening": "✓", "Lift controls": "✓", "Lift indication": "✓", "Lift operational": "✓", "Stair handrails": "✓", "Stair nosings": "✓", "Accessible toilet provided": "✓", "Cubicle permits use": "✗", "Door swing": "✗", "Door clear width": "✗", "Grab bars": "✗", "WC seat height": "✗", "Basin, tap and mirror": "✗", "Emergency call facility": "✗", "Available in practice": "✗", "International Symbol of Access": "✗", "Directional signage": "✗", "Signage legibility": "✗", "Tactile and Braille information": "✗", "Tactile ground surface indicators": "✗", "Assistive listening": "✗", "Lighting": "✗", "Accessible means of egress": "✗", "Refuge area": "✗", "Visual fire alarm": "✗", "Escape routes clear": "✗", "Lowered counter section": "✗", "Seating in waiting areas": "✗", "Staff awareness": "✗", "Documented provision": "✗" } }, { "name": "Fri chiks", "evaluations": { "Accessible parking bays": "✓", "Bays usable in practice": "✓", "Dropped kerb or curb cut": "✓", "Accessible route to entrance": "✓", "Route free of obstruction": "no ramp", "Step-free entry available": "✓", "Ramp gradient": "✓", "Ramp clear width": "✓", "Ramp landings": "✓", "Ramp edge protection": "✓", "Ramp handrails": "✓", "Ramp surface": "✓", "Main door clear width": "✓", "Door operable": "✓", "Corridor clear width": "✓", "Turning space": "✓", "Internal doors": "✓", "Internal level changes": "✓", "Floor surfaces": "✓", "Lift provided": "✓", "Lift location": "✓", "Lift car size": "✗", "Lift door opening": "✗", "Lift controls": "✗", "Lift indication": "✗", "Lift operational": "✗", "Stair handrails": "✗", "Stair nosings": "✗", "Accessible toilet provided": "✗", "Cubicle permits use": "✗", "Door swing": "✗", "Door clear width": "✗", "Grab bars": "✗", "WC seat height": "✗", "Basin, tap and mirror": "✗", "Emergency call facility": "✗", "Available in practice": "✗", "International Symbol of Access": "✗", "Directional signage": "✗", "Signage legibility": "✗", "Tactile and Braille information": "✗", "Tactile ground surface indicators": "✗", "Assistive listening": "✗", "Lighting": "✗", "Accessible means of egress": "✗", "Refuge area": "✗", "Visual fire alarm": "✗", "Escape routes clear": "✗", "Lowered counter section": "✗", "Seating in waiting areas": "✗", "Staff awareness": "✗", "Documented provision": "✗" } }, { "name": "Siddique trade center", "evaluations": {} }, { "name": "Empire center", "evaluations": {} }, { "name": "Third Culture Coffee", "evaluations": {} }, { "name": "Readings", "evaluations": {} }, { "name": "Pizza hut", "evaluations": {} }, { "name": "Shawarma stop", "evaluations": {} }, { "name": "Mall one", "evaluations": {} }, { "name": "Hafiz center", "evaluations": { "Accessible parking bays": "✓", "Bays usable in practice": "✓", "Dropped kerb or curb cut": "✓", "Accessible route to entrance": "✓", "Route free of obstruction": "steep", "Step-free entry available": "✓", "Ramp gradient": "✓", "Ramp clear width": "✓", "Ramp landings": "✓", "Ramp edge protection": "✓", "Ramp handrails": "✗", "Ramp surface": "✗", "Main door clear width": "✗", "Door operable": "✗", "Corridor clear width": "✗", "Turning space": "✗", "Internal doors": "✗", "Internal level changes": "✗", "Floor surfaces": "✗", "Lift provided": "✗", "Lift location": "✗", "Lift car size": "✗", "Lift door opening": "✗", "Lift controls": "✗", "Lift indication": "✗", "Lift operational": "✗", "Stair handrails": "✗", "Stair nosings": "✗", "Accessible toilet provided": "✗", "Cubicle permits use": "✗", "Door swing": "✗", "Door clear width": "✗", "Grab bars": "✗", "WC seat height": "✗", "Basin, tap and mirror": "✗", "Emergency call facility": "✗", "Available in practice": "✗", "International Symbol of Access": "✗", "Directional signage": "✗", "Signage legibility": "✗", "Tactile and Braille information": "✗", "Tactile ground surface indicators": "✗", "Assistive listening": "✗", "Lighting": "✗", "Accessible means of egress": "✗", "Refuge area": "✗", "Visual fire alarm": "✗", "Escape routes clear": "✗", "Lowered counter section": "✗", "Seating in waiting areas": "✗", "Staff awareness": "✗", "Documented provision": "✗" } }, { "name": "Mall of gulberg", "evaluations": {} }, { "name": "Askari towers", "evaluations": { "Accessible parking bays": "✓", "Bays usable in practice": "✓", "Dropped kerb or curb cut": "✓", "Accessible route to entrance": "✓", "Route free of obstruction": "✓", "Step-free entry available": "low", "Ramp gradient": "✓", "Ramp clear width": "✓", "Ramp landings": "✓", "Ramp edge protection": "✓", "Ramp handrails": "✓", "Ramp surface": "✓", "Main door clear width": "✓", "Door operable": "✓", "Corridor clear width": "✓", "Turning space": "✓", "Internal doors": "✓", "Internal level changes": "✓", "Floor surfaces": "✓", "Lift provided": "✓", "Lift location": "✓", "Lift car size": "✓", "Lift door opening": "✓", "Lift controls": "✓", "Lift indication": "✓", "Lift operational": "✓", "Stair handrails": "✓", "Stair nosings": "✓", "Accessible toilet provided": "✓", "Cubicle permits use": "✓", "Door swing": "✓", "Door clear width": "✓", "Grab bars": "✓", "WC seat height": "✓", "Basin, tap and mirror": "✗", "Emergency call facility": "✗", "Available in practice": "✗", "International Symbol of Access": "✗", "Directional signage": "✗", "Signage legibility": "✗", "Tactile and Braille information": "✗", "Tactile ground surface indicators": "✗", "Assistive listening": "✗", "Lighting": "✗", "Accessible means of egress": "✗", "Refuge area": "✗", "Visual fire alarm": "✗", "Escape routes clear": "✗", "Lowered counter section": "✗", "Seating in waiting areas": "✗", "Staff awareness": "✗", "Documented provision": "✗" } }] };
+
+    function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+    function computeEvaluation(record) {
+      const ev = record.evaluations || {};
+      if (!Object.keys(ev).length) return null;
+      let overall = 0;
+      const domains = evaluationData.domains.map(dm => {
+        const rows = dm.criteria.map(c => {
+          const v = ev[c];
+          const pass = v === '✓';
+          const note = (v && v !== '✓' && v !== '✗') ? v : '';
+          return { criterion: c, pass, note };
+        });
+        const passed = rows.filter(r => r.pass).length;
+        const pct = rows.length ? passed / rows.length : 0;
+        const weight = parseFloat(dm.weight);
+        overall += pct * weight;
+        return { name: dm.domain, weight, rows, passed, total: rows.length, pct };
+      });
+      return { domains, overall: Math.round(overall) };
+    }
+
+    const evalLoader = document.getElementById('eval-loader');
+    const sheetOverlay = document.getElementById('sheet-overlay');
+    const sheetTabs = document.getElementById('sheet-tabs');
+    const sheetBody = document.getElementById('sheet-body');
+    let evalTimer = null;
+
+    function openEvaluation(index) {
+      const b = buildings[index];
+      const record = evaluationData.buildings[index];
+      document.getElementById('eval-loader-title').textContent = b.name;
+      const stepEl = document.getElementById('eval-loader-step');
+      const fill = document.getElementById('eval-bar-fill');
+      const steps = ['Opening survey record…']
+        .concat(evaluationData.domains.map(d => 'Preparing sheet: ' + d.domain.replace(/^Domain \d+: /, '') + '…'))
+        .concat(['Calculating accessibility score…']);
+      fill.style.width = '0%';
+      evalLoader.classList.add('show');
+      let pct = 0, i = 0;
+      clearInterval(evalTimer);
+      evalTimer = setInterval(() => {
+        pct = Math.min(100, pct + 100 / steps.length);
+        stepEl.textContent = steps[Math.min(i++, steps.length - 1)];
+        fill.style.width = pct + '%';
+        if (pct >= 100) {
+          clearInterval(evalTimer);
+          setTimeout(() => {
+            renderSheets(b, record);
+            sheetOverlay.classList.add('show');
+            sheetOverlay.scrollTop = 0;
+            evalLoader.classList.remove('show');
+            document.getElementById('sheet-close').focus();
+          }, 250);
+        }
+      }, 170);
+    }
+
+    function closeEvaluation() {
+      sheetOverlay.classList.remove('show');
+    }
+    document.getElementById('sheet-close').addEventListener('click', closeEvaluation);
+    // Summary rows jump to their domain's tab
+    sheetBody.addEventListener('click', e => {
+      const row = e.target.closest('[data-goto]');
+      if (!row) return;
+      const tab = sheetTabs.children[parseInt(row.dataset.goto, 10)];
+      if (tab) tab.click();
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && sheetOverlay.classList.contains('show')) closeEvaluation(); });
+
+    function renderSheets(b, record) {
+      document.getElementById('sheet-title').textContent = b.name;
+      const result = computeEvaluation(record);
+      sheetTabs.innerHTML = '';
+      if (!result) {
+        document.getElementById('sheet-sub').textContent = 'Survey record: ' + record.name;
+        sheetBody.innerHTML = '<div class="sheet-empty"><strong>Evaluation pending</strong><br>No accessibility criteria have been scored for this building yet.</div>';
+        return;
+      }
+      document.getElementById('sheet-sub').textContent = 'Survey record: ' + record.name + ' · Weighted accessibility score ' + result.overall + '/100';
+
+      const sheets = [{ label: 'Summary', render: () => summarySheet(result) }]
+        .concat(result.domains.map((d, n) => ({
+          label: (n + 1) + '. ' + d.name.replace(/^Domain \d+: /, ''),
+          render: () => domainSheet(d)
+        })));
+
+      sheets.forEach((s, n) => {
+        const btn = document.createElement('button');
+        btn.type = 'button'; btn.className = 'sheet-tab'; btn.setAttribute('role', 'tab');
+        btn.textContent = s.label;
+        btn.addEventListener('click', () => {
+          sheetTabs.querySelectorAll('.sheet-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+          btn.classList.add('active'); btn.setAttribute('aria-selected', 'true');
+          sheetBody.innerHTML = s.render();
+          sheetOverlay.scrollTop = 0;
+        });
+        sheetTabs.appendChild(btn);
+      });
+      sheetTabs.firstChild.click();
+    }
+
+    function pill(score, text) {
+      return '<span class="sheet-pill" style="background:' + scoreColor(score) + '">' + text + '</span>';
+    }
+
+    function summarySheet(r) {
+      const rows = r.domains.map((d, n) => {
+        const p = Math.round(d.pct * 100);
+        return '<tr class="domain-row" data-goto="' + (n + 1) + '"><td><button type="button" class="domain-link">' + esc(d.name) + ' →</button></td><td class="num">' + d.weight + '%</td><td class="num">' + d.passed + ' / ' + d.total +
+          '</td><td><div class="sheet-bar"><span style="width:' + p + '%;background:' + scoreColor(p) + '"></span></div></td>' +
+          '<td class="num">' + p + '%</td><td class="num">' + (d.pct * d.weight).toFixed(1) + '</td></tr>';
+      }).join('');
+      return '<div class="sheet-heading"><h3>Overall accessibility score</h3>' + pill(r.overall, r.overall + ' / 100 · ' + scoreLabel(r.overall)) + '</div>' +
+        '<p class="sheet-meta">Each domain score is the share of its criteria that pass, weighted by the domain weight. Select a domain to open its sheet.</p>' +
+        '<div style="overflow-x:auto"><table class="sheet-table"><thead><tr><th>Domain</th><th class="num">Weight</th><th class="num">Passed</th><th></th><th class="num">Score</th><th class="num">Points</th></tr></thead><tbody>' +
+        rows + '</tbody></table></div>';
+    }
+
+    function domainSheet(d) {
+      const p = Math.round(d.pct * 100);
+      const rows = d.rows.map(x => '<tr><td>' + esc(x.criterion) + '</td><td>' +
+        (x.pass ? '<span class="res pass">✓ Pass</span>'
+          : '<span class="res fail">✗ Fail' + (x.note ? ' <small>(' + esc(x.note) + ')</small>' : '') + '</span>') + '</td></tr>').join('');
+      return '<div class="sheet-heading"><h3>' + esc(d.name) + '</h3>' + pill(p, p + '% · ' + d.passed + ' of ' + d.total + ' passed') + '</div>' +
+        '<p class="sheet-meta">Domain weight: ' + d.weight + '% of the overall score.</p>' +
+        '<div style="overflow-x:auto"><table class="sheet-table"><thead><tr><th>Criterion</th><th>Result</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+    }
+
+
+    /* Card paragraph written from each building's evaluation record (matched by order). */
+    function shortDomain(name) { return name.replace(/^Domain \d+: /, '').replace(/\+$/, '').toLowerCase(); }
+    function cardParagraph(index, fallbackBuilding) {
+      const record = evaluationData.buildings[index];
+      const r = record && computeEvaluation(record);
+      if (!r) return 'Accessibility evaluation pending: none of the 52 survey criteria have been scored for this building yet. Its sheets will fill in once the on-site survey is entered.';
+      const ev = record.evaluations;
+      const passed = r.domains.reduce((n, d) => n + d.passed, 0);
+      const total = r.domains.reduce((n, d) => n + d.total, 0);
+      const ratio = passed / total;
+      const lead = ratio < 0.4 ? 'most access features are missing'
+        : ratio < 0.7 ? 'access is partial, with clear gaps'
+          : 'most access features are in place';
+      let best = r.domains[0], worst = r.domains[0];
+      r.domains.forEach(d => { if (d.pct > best.pct) best = d; if (d.pct < worst.pct) worst = d; });
+      const frac = d => d.passed + ' of ' + d.total;
+      let s2 = best.pct === worst.pct
+        ? ''
+        : ' Strongest area is ' + shortDomain(best.name) + ' (' + frac(best) + '); weakest is ' + shortDomain(worst.name) + ' (' + frac(worst) + ').';
+      const state = (c, yes, no) => {
+        const v = ev[c];
+        if (v === '✓') return yes;
+        return no + (v && v !== '✗' ? ' (noted as “' + v + '”)' : '');
+      };
+      const s3 = ' ' + state('Step-free entry available', 'Step-free entry is available', 'Step-free entry is not met') + '; ' +
+        state('Lift provided', 'a lift is provided', 'no lift is provided') + '; ' +
+        state('Accessible toilet provided', 'an accessible toilet is provided.', 'no accessible toilet is provided.');
+      return 'Passes ' + passed + ' of ' + total + ' surveyed criteria, so ' + lead + '.' + s2 + s3;
+    }
+
     /* ================= INFO CARDS ================= */
     const gradients = [
       'linear-gradient(135deg,#0d5c3f,#14795a)',
@@ -1466,6 +1968,11 @@
     ];
     const buildingIconSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 21V7l8-4 8 4v14"/><path d="M9 21v-6h6v6"/><path d="M9 10h.01M15 10h.01M9 14h.01M15 14h.01"/></svg>`;
 
+    /* Entrance photos: put one image per building in this folder, named
+       building-01.jpg ... building-20.jpg (same order as the cards).
+       Until a file exists, the card shows the green placeholder instead. */
+    const ENTRANCE_IMG_DIR = 'assets/entrances';
+
     const grid = document.getElementById('card-grid');
     buildings.forEach((b, i) => {
       const card = document.createElement('div');
@@ -1473,6 +1980,8 @@
       card.id = 'card-' + b.id;
       card.innerHTML = `
     <div class="card-image" style="background:${gradients[i % gradients.length]}">
+      <img class="entrance-img" src="${ENTRANCE_IMG_DIR}/building-${String(b.id).padStart(2, '0')}.jpg"
+           alt="Entrance of ${esc(b.name)}" loading="lazy" onerror="this.style.display='none'">
       <span class="card-num">${String(b.id).padStart(2, '0')}</span>
       ${buildingIconSvg}
     </div>
@@ -1482,9 +1991,13 @@
         <span class="card-score-pill" style="background:${scoreColor(b.score)}">${b.score}</span>
         <span class="card-score-label">${scoreLabel(b.score)} accessibility</span>
       </div>
-      <p>${b.long}</p>
+      <p>${cardParagraph(i, b)}</p>
       <button class="card-btn" onclick="goToMap(${b.id})">
         View on architectural map
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+      <button class="card-btn sheet-btn" onclick="openEvaluation(${i})">
+        View accessibility sheets
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
       </button>
     </div>`;
